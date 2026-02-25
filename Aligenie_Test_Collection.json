@@ -1,0 +1,324 @@
+{
+  "info": {
+    "name": "天猫精灵 API 测试集合",
+    "description": "用于测试天猫精灵智能音箱对接功能",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. 获取访问令牌",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 自动保存 access_token 到环境变量",
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('access_token', jsonData.access_token);",
+              "    console.log('Access Token 已保存:', jsonData.access_token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials",
+              "type": "text"
+            },
+            {
+              "key": "client_id",
+              "value": "aligenie-client",
+              "type": "text"
+            },
+            {
+              "key": "client_secret",
+              "value": "aligenie-secret",
+              "type": "text"
+            },
+            {
+              "key": "scope",
+              "value": "device:control,device:read",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/oauth2/token",
+          "host": ["{{base_url}}"],
+          "path": ["oauth2", "token"]
+        },
+        "description": "使用 client_credentials 授权类型获取访问令牌"
+      },
+      "response": []
+    },
+    {
+      "name": "2. 设备发现",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Discovery\",\n    \"name\": \"DiscoveryDevices\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {}\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/discovery",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "discovery"]
+        },
+        "description": "发现用户的所有智能设备"
+      },
+      "response": []
+    },
+    {
+      "name": "3. 开机",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOn\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "打开扫地机器人"
+      },
+      "response": []
+    },
+    {
+      "name": "4. 关机",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOff\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "关闭扫地机器人"
+      },
+      "response": []
+    },
+    {
+      "name": "5. 暂停",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"Pause\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "暂停扫地机器人工作"
+      },
+      "response": []
+    },
+    {
+      "name": "6. 继续",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"Continue\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "继续扫地机器人工作"
+      },
+      "response": []
+    },
+    {
+      "name": "7. 设置模式 - 自动",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\",\n    \"mode\": \"auto\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "设置扫地机器人为自动模式"
+      },
+      "response": []
+    },
+    {
+      "name": "8. 设置模式 - 定点",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\",\n    \"mode\": \"spot\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/control",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "control"]
+        },
+        "description": "设置扫地机器人为定点清扫模式"
+      },
+      "response": []
+    },
+    {
+      "name": "9. 设备查询",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Query\",\n    \"name\": \"Query\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/query",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "query"]
+        },
+        "description": "查询扫地机器人当前状态"
+      },
+      "response": []
+    },
+    {
+      "name": "10. 测试无效令牌",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer invalid_token_12345"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Discovery\",\n    \"name\": \"DiscoveryDevices\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {}\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/aligenie/discovery",
+          "host": ["{{base_url}}"],
+          "path": ["aligenie", "discovery"]
+        },
+        "description": "测试无效令牌的错误处理"
+      },
+      "response": []
+    }
+  ]
+}

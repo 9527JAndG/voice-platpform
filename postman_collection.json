@@ -1,0 +1,491 @@
+{
+  "info": {
+    "name": "多平台智能音箱 API",
+    "description": "支持天猫精灵、小度音箱、小爱同学三大平台的智能家居对接接口测试集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "test_client_id",
+      "type": "string"
+    },
+    {
+      "key": "client_secret",
+      "value": "test_client_secret",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. OAuth 授权（三平台共用）",
+      "item": [
+        {
+          "name": "0.1 获取授权码（浏览器访问）",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/authorize?client_id={{client_id}}&redirect_uri=http://localhost:8080/callback&state=test123&response_type=code",
+              "host": ["{{base_url}}"],
+              "path": ["authorize"],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "redirect_uri",
+                  "value": "http://localhost:8080/callback"
+                },
+                {
+                  "key": "state",
+                  "value": "test123"
+                },
+                {
+                  "key": "response_type",
+                  "value": "code"
+                }
+              ]
+            },
+            "description": "在浏览器中访问此URL，点击授权后从重定向URL中获取code参数"
+          }
+        },
+        {
+          "name": "0.2 获取访问令牌",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access_token);",
+                  "    console.log('Access Token: ' + jsonData.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "authorization_code",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}",
+                  "type": "text"
+                },
+                {
+                  "key": "code",
+                  "value": "YOUR_CODE_HERE",
+                  "description": "从授权页面获取的code",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/token",
+              "host": ["{{base_url}}"],
+              "path": ["token"]
+            },
+            "description": "使用授权码换取访问令牌"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. 天猫精灵（AliGenie）",
+      "item": [
+        {
+          "name": "1.1 设备发现",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Discovery\",\n    \"name\": \"DiscoveryRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smarthome/discovery",
+              "host": ["{{base_url}}"],
+              "path": ["smarthome", "discovery"]
+            }
+          }
+        },
+        {
+          "name": "1.2 开机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOn\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smarthome/control",
+              "host": ["{{base_url}}"],
+              "path": ["smarthome", "control"]
+            }
+          }
+        },
+        {
+          "name": "1.3 关机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOff\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smarthome/control",
+              "host": ["{{base_url}}"],
+              "path": ["smarthome", "control"]
+            }
+          }
+        },
+        {
+          "name": "1.4 查询状态",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Query\",\n    \"name\": \"QueryRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"robot_001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/smarthome/query",
+              "host": ["{{base_url}}"],
+              "path": ["smarthome", "query"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. 小度音箱（DuerOS）",
+      "item": [
+        {
+          "name": "2.1 设备发现",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"DuerOS.ConnectedHome.Discovery\",\n    \"name\": \"DiscoverAppliancesRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1.0\"\n  },\n  \"payload\": {\n    \"accessToken\": \"{{access_token}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueros/discovery",
+              "host": ["{{base_url}}"],
+              "path": ["dueros", "discovery"]
+            }
+          }
+        },
+        {
+          "name": "2.2 开机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"DuerOS.ConnectedHome.Control\",\n    \"name\": \"TurnOnRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1.0\"\n  },\n  \"payload\": {\n    \"accessToken\": \"{{access_token}}\",\n    \"appliance\": {\n      \"applianceId\": \"robot_001\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueros/control",
+              "host": ["{{base_url}}"],
+              "path": ["dueros", "control"]
+            }
+          }
+        },
+        {
+          "name": "2.3 关机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"DuerOS.ConnectedHome.Control\",\n    \"name\": \"TurnOffRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1.0\"\n  },\n  \"payload\": {\n    \"accessToken\": \"{{access_token}}\",\n    \"appliance\": {\n      \"applianceId\": \"robot_001\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueros/control",
+              "host": ["{{base_url}}"],
+              "path": ["dueros", "control"]
+            }
+          }
+        },
+        {
+          "name": "2.4 暂停",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"DuerOS.ConnectedHome.Control\",\n    \"name\": \"PauseRequest\",\n    \"messageId\": \"{{$randomUUID}}\",\n    \"payloadVersion\": \"1.0\"\n  },\n  \"payload\": {\n    \"accessToken\": \"{{access_token}}\",\n    \"appliance\": {\n      \"applianceId\": \"robot_001\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueros/control",
+              "host": ["{{base_url}}"],
+              "path": ["dueros", "control"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. 小爱同学（MiAI）",
+      "item": [
+        {
+          "name": "3.1 设备发现",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/miai/discovery",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "discovery"]
+            }
+          }
+        },
+        {
+          "name": "3.2 开机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"intent\": \"turn-on\",\n  \"deviceId\": \"robot_001\",\n  \"requestId\": \"{{$randomUUID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/miai/control",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "control"]
+            }
+          }
+        },
+        {
+          "name": "3.3 关机",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"intent\": \"turn-off\",\n  \"deviceId\": \"robot_001\",\n  \"requestId\": \"{{$randomUUID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/miai/control",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "control"]
+            }
+          }
+        },
+        {
+          "name": "3.4 暂停",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"intent\": \"pause\",\n  \"deviceId\": \"robot_001\",\n  \"requestId\": \"{{$randomUUID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/miai/control",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "control"]
+            }
+          }
+        },
+        {
+          "name": "3.5 查询状态",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"robot_001\",\n  \"requestId\": \"{{$randomUUID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/miai/query",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "query"]
+            }
+          }
+        },
+        {
+          "name": "3.6 健康检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/miai/health",
+              "host": ["{{base_url}}"],
+              "path": ["miai", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "info": {
+    "name": "Google Assistant Smart Home API",
+    "description": "Google Assistant 智能音箱扫地机器人控制接口测试集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "test_access_token_123456",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. SYNC Intent - 设备发现",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-sync-001\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.SYNC\"\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "发现用户的所有扫地机器人设备"
+      }
+    }
+  ]
+}
+    },
+    {
+      "name": "2. QUERY Intent - 状态查询",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-query-001\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.QUERY\",\n    \"payload\": {\n      \"devices\": [\n        {\"id\": \"robot_001\"}\n      ]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "查询设备的当前状态"
+      }
+    },
+    {
+      "name": "3. EXECUTE - OnOff (开机)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-execute-001\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.EXECUTE\",\n    \"payload\": {\n      \"commands\": [{\n        \"devices\": [\n          {\"id\": \"robot_001\"}\n        ],\n        \"execution\": [{\n          \"command\": \"action.devices.commands.OnOff\",\n          \"params\": {\n            \"on\": true\n          }\n        }]\n      }]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "打开扫地机器人"
+      }
+    },
+    {
+      "name": "4. EXECUTE - StartStop (启动清扫)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-execute-002\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.EXECUTE\",\n    \"payload\": {\n      \"commands\": [{\n        \"devices\": [\n          {\"id\": \"robot_001\"}\n        ],\n        \"execution\": [{\n          \"command\": \"action.devices.commands.StartStop\",\n          \"params\": {\n            \"start\": true\n          }\n        }]\n      }]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "启动清扫"
+      }
+    },
+    {
+      "name": "5. EXECUTE - Dock (回充)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-execute-003\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.EXECUTE\",\n    \"payload\": {\n      \"commands\": [{\n        \"devices\": [\n          {\"id\": \"robot_001\"}\n        ],\n        \"execution\": [{\n          \"command\": \"action.devices.commands.Dock\"\n        }]\n      }]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "让扫地机器人回充"
+      }
+    },
+    {
+      "name": "6. EXECUTE - SetModes (设置模式)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-execute-004\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.EXECUTE\",\n    \"payload\": {\n      \"commands\": [{\n        \"devices\": [\n          {\"id\": \"robot_001\"}\n        ],\n        \"execution\": [{\n          \"command\": \"action.devices.commands.SetModes\",\n          \"params\": {\n            \"updateModeSettings\": {\n              \"clean_mode\": \"spot\"\n            }\n          }\n        }]\n      }]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "设置清扫模式为定点清扫"
+      }
+    },
+    {
+      "name": "7. EXECUTE - Locate (定位设备)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-execute-005\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.EXECUTE\",\n    \"payload\": {\n      \"commands\": [{\n        \"devices\": [\n          {\"id\": \"robot_001\"}\n        ],\n        \"execution\": [{\n          \"command\": \"action.devices.commands.Locate\",\n          \"params\": {\n            \"silent\": false\n          }\n        }]\n      }]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "定位扫地机器人（播放声音）"
+      }
+    },
+    {
+      "name": "8. DISCONNECT Intent - 账号解绑",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestId\": \"test-disconnect-001\",\n  \"inputs\": [{\n    \"intent\": \"action.devices.DISCONNECT\"\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/google/fulfillment",
+          "host": ["{{base_url}}"],
+          "path": ["google", "fulfillment"]
+        },
+        "description": "解绑 Google 账号"
+      }
+    }
+  ]
+}
