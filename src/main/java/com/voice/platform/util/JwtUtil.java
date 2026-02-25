@@ -77,10 +77,10 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (SecurityException ex) {
             log.error("Invalid JWT signature");
@@ -100,11 +100,11 @@ public class JwtUtil {
      * 从 Token 中获取用户 ID
      */
     public String getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         
         return claims.getSubject();
     }
@@ -113,11 +113,11 @@ public class JwtUtil {
      * 从 Token 中获取客户端 ID
      */
     public String getClientIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         
         return claims.get("client_id", String.class);
     }
@@ -126,11 +126,11 @@ public class JwtUtil {
      * 从 Token 中获取权限范围
      */
     public String getScopeFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         
         return claims.get("scope", String.class);
     }
@@ -139,11 +139,11 @@ public class JwtUtil {
      * 从 Token 中获取所有声明
      */
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
     
     /**

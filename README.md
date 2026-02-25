@@ -373,7 +373,7 @@ voice-platform/
 
 ## 🛠️ 技术栈
 
-- **后端框架**: Spring Boot 2.7.18
+- **后端框架**: Spring Boot 3.2.3
 - **Java 版本**: Java 21
 - **数据库**: MySQL 8.0
 - **ORM**: Spring Data JPA

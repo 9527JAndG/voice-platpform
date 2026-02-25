@@ -1,7 +1,7 @@
 package com.voice.platform.model;
 
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Data;
 
 /**
