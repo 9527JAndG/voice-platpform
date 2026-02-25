@@ -1,0 +1,373 @@
+{
+  "description": "小爱同学（MiAI）完整测试用例集",
+  "version": "1.0",
+  "baseUrl": "http://localhost:8080/miai",
+  "testCases": [
+    {
+      "name": "1. 设备发现 - 成功",
+      "method": "POST",
+      "endpoint": "/discovery",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success",
+        "data": {
+          "devices": "array",
+          "count": "number"
+        }
+      }
+    },
+    {
+      "name": "2. 设备发现 - Token无效",
+      "method": "POST",
+      "endpoint": "/discovery",
+      "headers": {
+        "Authorization": "Bearer invalid-token",
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "expectedStatus": 401,
+      "expectedResponse": {
+        "code": 401,
+        "message": "访问令牌无效或已过期"
+      }
+    },
+    {
+      "name": "3. 设备控制 - 开机",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "turn-on",
+        "deviceId": "device-001",
+        "requestId": "req-001"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "4. 设备控制 - 关机",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "turn-off",
+        "deviceId": "device-001",
+        "requestId": "req-002"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "5. 设备控制 - 暂停",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "pause",
+        "deviceId": "device-001",
+        "requestId": "req-003"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "6. 设备控制 - 继续",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "continue",
+        "deviceId": "device-001",
+        "requestId": "req-004"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "7. 设备控制 - 设置模式（自动模式）",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "set-mode",
+        "deviceId": "device-001",
+        "requestId": "req-005",
+        "params": {
+          "mode": "auto"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "8. 设备控制 - 设置模式（定点模式）",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "set-mode",
+        "deviceId": "device-001",
+        "requestId": "req-006",
+        "params": {
+          "mode": "spot"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "9. 设备控制 - 设置模式（沿边模式）",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "set-mode",
+        "deviceId": "device-001",
+        "requestId": "req-007",
+        "params": {
+          "mode": "edge"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success"
+      }
+    },
+    {
+      "name": "10. 设备控制 - 无效模式",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "set-mode",
+        "deviceId": "device-001",
+        "requestId": "req-008",
+        "params": {
+          "mode": "invalid-mode"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "不支持的模式: invalid-mode。支持的模式: auto, spot, edge"
+      }
+    },
+    {
+      "name": "11. 设备控制 - 缺少Intent参数",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "deviceId": "device-001",
+        "requestId": "req-009"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "缺少 intent 参数"
+      }
+    },
+    {
+      "name": "12. 设备控制 - 缺少DeviceId参数",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "turn-on",
+        "requestId": "req-010"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "缺少 deviceId 参数"
+      }
+    },
+    {
+      "name": "13. 设备控制 - 缺少Mode参数",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "set-mode",
+        "deviceId": "device-001",
+        "requestId": "req-011",
+        "params": {}
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "缺少 mode 参数"
+      }
+    },
+    {
+      "name": "14. 设备控制 - 不支持的操作",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "unsupported-action",
+        "deviceId": "device-001",
+        "requestId": "req-012"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "不支持的操作: unsupported-action"
+      }
+    },
+    {
+      "name": "15. 设备控制 - 设备不存在",
+      "method": "POST",
+      "endpoint": "/control",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "turn-on",
+        "deviceId": "non-existent-device",
+        "requestId": "req-013"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 404,
+        "message": "设备不存在"
+      }
+    },
+    {
+      "name": "16. 设备查询 - 成功",
+      "method": "POST",
+      "endpoint": "/query",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "deviceId": "device-001",
+        "requestId": "req-014"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success",
+        "data": {
+          "status": {
+            "device_id": "device-001"
+          }
+        }
+      }
+    },
+    {
+      "name": "17. 设备查询 - 缺少DeviceId参数",
+      "method": "POST",
+      "endpoint": "/query",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "req-015"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 400,
+        "message": "缺少 deviceId 参数"
+      }
+    },
+    {
+      "name": "18. 设备查询 - 设备不存在",
+      "method": "POST",
+      "endpoint": "/query",
+      "headers": {
+        "Authorization": "Bearer test-access-token-123",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "deviceId": "non-existent-device",
+        "requestId": "req-016"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 404,
+        "message": "设备不存在"
+      }
+    },
+    {
+      "name": "19. 健康检查 - 成功",
+      "method": "GET",
+      "endpoint": "/health",
+      "headers": {},
+      "body": null,
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "code": 0,
+        "message": "success",
+        "data": {
+          "status": "ok",
+          "platform": "xiaomi-miai"
+        }
+      }
+    }
+  ]
+}

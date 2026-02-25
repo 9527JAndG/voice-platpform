@@ -1,0 +1,588 @@
+{
+  "test_cases": [
+    {
+      "name": "1. SYNC Intent - 设备发现",
+      "description": "测试设备发现功能，返回用户的所有设备及其能力",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-sync-001",
+        "inputs": [{
+          "intent": "action.devices.SYNC"
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-sync-001",
+        "payload": {
+          "agentUserId": "user_1",
+          "deviceList": "array"
+        }
+      }
+    },
+    {
+      "name": "2. QUERY Intent - 状态查询",
+      "description": "查询指定设备的当前状态",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-query-001",
+        "inputs": [{
+          "intent": "action.devices.QUERY",
+          "payload": {
+            "devices": [
+              {"id": "robot_001"}
+            ]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-query-001",
+        "payload": {
+          "deviceStates": {
+            "robot_001": {
+              "online": true,
+              "status": "SUCCESS"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "3. EXECUTE Intent - 开机",
+      "description": "测试打开扫地机器人",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-001",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.OnOff",
+                "params": {
+                  "on": true
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-001",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "4. EXECUTE Intent - 关机",
+      "description": "测试关闭扫地机器人",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-002",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.OnOff",
+                "params": {
+                  "on": false
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-002",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "5. EXECUTE Intent - 启动清扫",
+      "description": "测试启动扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-003",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.StartStop",
+                "params": {
+                  "start": true
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-003",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "6. EXECUTE Intent - 停止清扫",
+      "description": "测试停止扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-004",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.StartStop",
+                "params": {
+                  "start": false
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-004",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "7. EXECUTE Intent - 暂停清扫",
+      "description": "测试暂停扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-005",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.PauseUnpause",
+                "params": {
+                  "pause": true
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-005",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "8. EXECUTE Intent - 继续清扫",
+      "description": "测试继续扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-006",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.PauseUnpause",
+                "params": {
+                  "pause": false
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-006",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "9. EXECUTE Intent - 回充",
+      "description": "测试扫地机器人回充",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-007",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.Dock"
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-007",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "10. EXECUTE Intent - 设置自动模式",
+      "description": "测试设置扫地机器人为自动清扫模式",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-008",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.SetModes",
+                "params": {
+                  "updateModeSettings": {
+                    "clean_mode": "auto"
+                  }
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-008",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "11. EXECUTE Intent - 设置定点模式",
+      "description": "测试设置扫地机器人为定点清扫模式",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-009",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.SetModes",
+                "params": {
+                  "updateModeSettings": {
+                    "clean_mode": "spot"
+                  }
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-009",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "12. EXECUTE Intent - 设置沿边模式",
+      "description": "测试设置扫地机器人为沿边清扫模式",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-010",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.SetModes",
+                "params": {
+                  "updateModeSettings": {
+                    "clean_mode": "edge"
+                  }
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-010",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "13. EXECUTE Intent - 定位设备",
+      "description": "测试定位扫地机器人（播放声音）",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-execute-011",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "robot_001"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.Locate",
+                "params": {
+                  "silent": false
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-execute-011",
+        "payload": {
+          "commands": [{
+            "ids": ["robot_001"],
+            "status": "SUCCESS"
+          }]
+        }
+      }
+    },
+    {
+      "name": "14. DISCONNECT Intent - 账号解绑",
+      "description": "测试账号解绑功能",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-disconnect-001",
+        "inputs": [{
+          "intent": "action.devices.DISCONNECT"
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-disconnect-001"
+      }
+    },
+    {
+      "name": "15. 错误测试 - 无效Token",
+      "description": "测试使用无效Token访问",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer INVALID_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-error-001",
+        "inputs": [{
+          "intent": "action.devices.SYNC"
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-error-001",
+        "payload": {
+          "errorCode": "authFailure"
+        }
+      }
+    },
+    {
+      "name": "16. 错误测试 - 设备不存在",
+      "description": "测试控制不存在的设备",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-error-002",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": [{
+              "devices": [
+                {"id": "non_existent_device"}
+              ],
+              "execution": [{
+                "command": "action.devices.commands.OnOff",
+                "params": {
+                  "on": true
+                }
+              }]
+            }]
+          }
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-error-002",
+        "payload": {
+          "commands": [{
+            "ids": ["non_existent_device"],
+            "status": "ERROR",
+            "errorCode": "deviceNotFound"
+          }]
+        }
+      }
+    },
+    {
+      "name": "17. 错误测试 - 不支持的Intent",
+      "description": "测试不支持的Intent类型",
+      "method": "POST",
+      "url": "http://localhost:8080/google/fulfillment",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "requestId": "test-error-003",
+        "inputs": [{
+          "intent": "action.devices.UNSUPPORTED"
+        }]
+      },
+      "expected_response": {
+        "requestId": "test-error-003",
+        "payload": {
+          "errorCode": "protocolError"
+        }
+      }
+    }
+  ],
+  "notes": {
+    "setup": "在运行测试前，请确保：1. 应用已启动 2. 已获取有效的 access_token 3. 数据库中存在测试设备",
+    "token_replacement": "将所有 YOUR_ACCESS_TOKEN 替换为实际的访问令牌",
+    "device_id": "确保 robot_001 设备存在于数据库中",
+    "google_specific": "Google Assistant 使用 4 种 Intent: SYNC, QUERY, EXECUTE, DISCONNECT"
+  }
+}

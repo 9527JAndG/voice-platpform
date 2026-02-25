@@ -1,0 +1,381 @@
+{
+  "test_cases": [
+    {
+      "name": "1. 设备发现测试",
+      "description": "测试设备发现功能，返回用户的所有设备",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/discovery",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Discovery",
+          "name": "DiscoverAppliancesRequest",
+          "messageId": "test-discovery-001",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN"
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Discovery",
+          "name": "DiscoverAppliancesResponse"
+        },
+        "payload": {
+          "discoveredAppliances": "array"
+        }
+      }
+    },
+    {
+      "name": "2. 开机测试",
+      "description": "测试打开扫地机器人",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "TurnOnRequest",
+          "messageId": "test-control-001",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "TurnOnConfirmation"
+        }
+      }
+    },
+    {
+      "name": "3. 关机测试",
+      "description": "测试关闭扫地机器人",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "TurnOffRequest",
+          "messageId": "test-control-002",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "TurnOffConfirmation"
+        }
+      }
+    },
+    {
+      "name": "4. 暂停测试",
+      "description": "测试暂停扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "PauseRequest",
+          "messageId": "test-control-003",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "PauseConfirmation"
+        }
+      }
+    },
+    {
+      "name": "5. 继续测试",
+      "description": "测试继续扫地机器人清扫",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "ContinueRequest",
+          "messageId": "test-control-004",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "ContinueConfirmation"
+        }
+      }
+    },
+    {
+      "name": "6. 设置模式 - 自动模式",
+      "description": "测试设置扫地机器人为自动模式",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeRequest",
+          "messageId": "test-control-005",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          },
+          "additionalInfo": {
+            "mode": "auto"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeConfirmation"
+        }
+      }
+    },
+    {
+      "name": "7. 设置模式 - 定点模式",
+      "description": "测试设置扫地机器人为定点清扫模式",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeRequest",
+          "messageId": "test-control-006",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          },
+          "additionalInfo": {
+            "mode": "spot"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeConfirmation"
+        }
+      }
+    },
+    {
+      "name": "8. 设置模式 - 沿边模式",
+      "description": "测试设置扫地机器人为沿边清扫模式",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeRequest",
+          "messageId": "test-control-007",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          },
+          "additionalInfo": {
+            "mode": "edge"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "SetModeConfirmation"
+        }
+      }
+    },
+    {
+      "name": "9. 查询设备状态",
+      "description": "测试查询扫地机器人当前状态",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Query",
+          "name": "GetStateRequest",
+          "messageId": "test-query-001",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Query",
+          "name": "GetStateResponse"
+        },
+        "payload": {
+          "deviceState": "object"
+        }
+      }
+    },
+    {
+      "name": "10. 错误测试 - 无效Token",
+      "description": "测试使用无效Token访问",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/discovery",
+      "headers": {
+        "Authorization": "Bearer INVALID_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Discovery",
+          "name": "DiscoverAppliancesRequest",
+          "messageId": "test-error-001",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "INVALID_TOKEN"
+        }
+      },
+      "expected_response": {
+        "status": 401
+      }
+    },
+    {
+      "name": "11. 错误测试 - 设备不存在",
+      "description": "测试控制不存在的设备",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "TurnOnRequest",
+          "messageId": "test-error-002",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "non_existent_device"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "ErrorResponse"
+        },
+        "payload": {
+          "errorCode": "DEVICE_NOT_FOUND"
+        }
+      }
+    },
+    {
+      "name": "12. 错误测试 - 不支持的操作",
+      "description": "测试不支持的控制操作",
+      "method": "POST",
+      "url": "http://localhost:8080/dueros/control",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "UnsupportedRequest",
+          "messageId": "test-error-003",
+          "payloadVersion": "1.0"
+        },
+        "payload": {
+          "accessToken": "YOUR_ACCESS_TOKEN",
+          "appliance": {
+            "applianceId": "robot_001"
+          }
+        }
+      },
+      "expected_response": {
+        "header": {
+          "namespace": "DuerOS.ConnectedHome.Control",
+          "name": "ErrorResponse"
+        },
+        "payload": {
+          "errorCode": "UNSUPPORTED_ACTION"
+        }
+      }
+    }
+  ],
+  "notes": {
+    "setup": "在运行测试前，请确保：1. 应用已启动 2. 已获取有效的 access_token 3. 数据库中存在测试设备",
+    "token_replacement": "将所有 YOUR_ACCESS_TOKEN 替换为实际的访问令牌",
+    "device_id": "确保 robot_001 设备存在于数据库中"
+  }
+}

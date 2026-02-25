@@ -1,0 +1,505 @@
+{
+  "info": {
+    "name": "Alexa Smart Home API 测试集合",
+    "description": "用于测试 Alexa Smart Home Skill 的完整请求集合",
+    "version": "1.0.0"
+  },
+  "tests": [
+    {
+      "name": "1. 设备发现 (Discovery)",
+      "description": "测试设备发现功能，返回用户的所有设备",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.Discovery",
+              "name": "Discover",
+              "payloadVersion": "3",
+              "messageId": "test-discovery-001"
+            },
+            "payload": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              }
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa.Discovery",
+              "name": "Discover.Response"
+            },
+            "payload": {
+              "endpoints": "array"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "2. 开机 (TurnOn)",
+      "description": "测试设备开机功能",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.PowerController",
+              "name": "TurnOn",
+              "payloadVersion": "3",
+              "messageId": "test-turnon-001",
+              "correlationToken": "test-correlation-001"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {}
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "Response"
+            }
+          },
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.PowerController",
+                "name": "powerState",
+                "value": "ON"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "3. 关机 (TurnOff)",
+      "description": "测试设备关机功能",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.PowerController",
+              "name": "TurnOff",
+              "payloadVersion": "3",
+              "messageId": "test-turnoff-001",
+              "correlationToken": "test-correlation-002"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {}
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "Response"
+            }
+          },
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.PowerController",
+                "name": "powerState",
+                "value": "OFF"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "4. 设置模式 - Auto (SetMode)",
+      "description": "测试设置清扫模式为自动模式",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.ModeController",
+              "name": "SetMode",
+              "payloadVersion": "3",
+              "messageId": "test-setmode-001",
+              "correlationToken": "test-correlation-003"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {
+              "mode": "Auto"
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.ModeController",
+                "name": "mode",
+                "value": "Auto"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "5. 设置模式 - Spot (SetMode)",
+      "description": "测试设置清扫模式为定点模式",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.ModeController",
+              "name": "SetMode",
+              "payloadVersion": "3",
+              "messageId": "test-setmode-002",
+              "correlationToken": "test-correlation-004"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {
+              "mode": "Spot"
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.ModeController",
+                "name": "mode",
+                "value": "Spot"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "6. 状态报告 (ReportState)",
+      "description": "测试查询设备当前状态",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "ReportState",
+              "payloadVersion": "3",
+              "messageId": "test-reportstate-001",
+              "correlationToken": "test-correlation-005"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {}
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "StateReport"
+            }
+          },
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.PowerController",
+                "name": "powerState"
+              },
+              {
+                "namespace": "Alexa.ModeController",
+                "name": "mode"
+              },
+              {
+                "namespace": "Alexa.EndpointHealth",
+                "name": "connectivity"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "7. 错误测试 - 设备不存在",
+      "description": "测试访问不存在的设备",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.PowerController",
+              "name": "TurnOn",
+              "payloadVersion": "3",
+              "messageId": "test-error-001",
+              "correlationToken": "test-correlation-006"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "nonexistent_device",
+              "cookie": {}
+            },
+            "payload": {}
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "ErrorResponse"
+            },
+            "payload": {
+              "type": "NO_SUCH_ENDPOINT"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "8. 错误测试 - 无效Token",
+      "description": "测试使用无效的访问令牌",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.PowerController",
+              "name": "TurnOn",
+              "payloadVersion": "3",
+              "messageId": "test-error-002",
+              "correlationToken": "test-correlation-007"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "INVALID_TOKEN"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {}
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "ErrorResponse"
+            },
+            "payload": {
+              "type": "INVALID_AUTHORIZATION_CREDENTIAL"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "9. 错误测试 - 无效模式",
+      "description": "测试设置不支持的清扫模式",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.ModeController",
+              "name": "SetMode",
+              "payloadVersion": "3",
+              "messageId": "test-error-003",
+              "correlationToken": "test-correlation-008"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "robot_001",
+              "cookie": {}
+            },
+            "payload": {
+              "mode": "InvalidMode"
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa",
+              "name": "ErrorResponse"
+            },
+            "payload": {
+              "type": "INVALID_VALUE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "10. 授权接受 (AcceptGrant)",
+      "description": "测试接受授权请求",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.Authorization",
+              "name": "AcceptGrant",
+              "payloadVersion": "3",
+              "messageId": "test-acceptgrant-001"
+            },
+            "payload": {
+              "grant": {
+                "type": "OAuth2.AuthorizationCode",
+                "code": "test_authorization_code_123"
+              },
+              "grantee": {
+                "type": "BearerToken",
+                "token": "test_access_token_456"
+              }
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa.Authorization",
+              "name": "AcceptGrant.Response"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "notes": {
+    "setup": [
+      "1. 确保应用已启动: mvn spring-boot:run",
+      "2. 确保数据库已导入测试数据",
+      "3. 获取有效的 access_token (通过 OAuth 流程)",
+      "4. 将所有请求中的 YOUR_ACCESS_TOKEN_HERE 替换为实际的 token"
+    ],
+    "testOrder": [
+      "建议按顺序执行测试:",
+      "1. 先测试设备发现",
+      "2. 再测试设备控制 (开机/关机/模式)",
+      "3. 测试状态查询",
+      "4. 最后测试错误场景"
+    ],
+    "voiceCommands": [
+      "Alexa, discover devices",
+      "Alexa, turn on Living Room Vacuum",
+      "Alexa, turn off the vacuum",
+      "Alexa, set Living Room Vacuum to spot mode",
+      "Alexa, what's the status of Living Room Vacuum?"
+    ]
+  }
+}
