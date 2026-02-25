@@ -13,7 +13,7 @@
     </parent>
 
     <groupId>com.voice</groupId>
-    <artifactId>platpform</artifactId>
+    <artifactId>platform</artifactId>
     <version>1.0.0</version>
     <name>Voice Smart Home</name>
     <description>天猫精灵、小爱同学、小度、AWS Alexa、Google Assistant对接 - 扫地机器人控制</description>
@@ -126,3 +126,4 @@
         </plugins>
     </build>
 </project>
+
