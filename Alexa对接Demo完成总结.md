@@ -225,7 +225,7 @@ start.bat   # Windows
 
 ```bash
 # 确保数据库中已导入
-src/main/resources/test-data.sql
+src/main/resources/smarthomedb.sql
 ```
 
 ### 3. 使用 Postman 测试

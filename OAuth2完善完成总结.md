@@ -336,7 +336,7 @@ oauth2:
 
 运行迁移脚本：
 ```bash
-mysql -u root -p smarthomedb < src/main/resources/oauth2-migration.sql
+mysql -u root -p smarthomedb < src/main/resources/smarthomedb.sql
 ```
 
 ### 2. 配置修改

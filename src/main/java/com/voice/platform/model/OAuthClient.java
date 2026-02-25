@@ -89,6 +89,13 @@ public class OAuthClient {
      */
     @Column(name = "auto_approve")
     private Boolean autoApprove = false;
+
+    /**
+     * 描述
+     * 描述
+     */
+    @Column(name = "description", length = 50)
+    private String description = "jwt";
     
     /**
      * 创建时间

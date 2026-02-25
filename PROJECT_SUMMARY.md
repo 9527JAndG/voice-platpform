@@ -66,7 +66,7 @@
 #### 配置文件（4个）
 - `pom.xml` - Maven 项目配置
 - `application.yml` - Spring Boot 配置
-- `schema.sql` - 数据库初始化脚本
+- `smarthomedb.sql` - 数据库初始化脚本
 - `.gitignore` - Git 忽略配置
 
 #### 前端文件（1个）

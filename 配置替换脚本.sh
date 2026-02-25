@@ -4,7 +4,7 @@
 # 多平台智能音箱对接项目 - 配置替换脚本
 # ============================================
 # 说明：
-# 本脚本用于快速替换 test-data.sql 中的平台配置占位符
+# 本脚本用于快速替换 smarthomedb.sql 中的平台配置占位符
 # 使用方法：
 #   1. 编辑本脚本，填写实际的平台配置信息
 #   2. 执行：bash 配置替换脚本.sh
@@ -78,7 +78,7 @@ check_config() {
 # ============================================
 
 replace_config() {
-    local input_file="src/main/resources/test-data.sql"
+    local input_file="src/main/resources/smarthomedb.sql"
     local output_file="src/main/resources/test-data-configured.sql"
     
     # 检查输入文件是否存在

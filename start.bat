@@ -16,7 +16,7 @@ echo [✓] Maven 环境正常
 
 echo.
 echo [2/3] 检查 MySQL 连接...
-echo 请确保 MySQL 已启动并且已执行 schema.sql 脚本
+echo 请确保 MySQL 已启动并且已执行 smarthomedb.sql 脚本
 echo.
 
 echo [3/3] 启动应用...

@@ -5,7 +5,7 @@ REM ============================================
 REM 说明：
 REM 1. 本脚本用于导入测试数据到 MySQL 数据库
 REM 2. 请先确保数据库已创建并配置正确
-REM 3. 请先替换 test-data.sql 中的 YOUR_* 占位符
+REM 3. 请先替换 smarthomedb.sql 中的 YOUR_* 占位符
 REM ============================================
 
 setlocal enabledelayedexpansion
@@ -18,7 +18,7 @@ set DB_USER=root
 set DB_PASSWORD=
 
 REM 测试数据文件
-set TEST_DATA_FILE=src\main\resources\test-data.sql
+set TEST_DATA_FILE=src\main\resources\smarthomedb.sql
 
 echo ============================================
 echo 测试数据导入脚本
@@ -76,7 +76,7 @@ if "%DB_PASSWORD%"=="" (
 
 if !errorlevel! neq 0 (
     echo [错误] 数据库 %DB_NAME% 不存在
-    echo 请先运行 schema.sql 创建数据库
+    echo 请先运行 smarthomedb.sql 创建数据库
     exit /b 1
 )
 

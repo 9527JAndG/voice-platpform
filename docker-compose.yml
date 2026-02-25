@@ -16,8 +16,8 @@ services:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
-      - ./src/main/resources/test-data.sql:/docker-entrypoint-initdb.d/2-test-data.sql
+      - ./src/main/resources/smarthomedb.sql:/docker-entrypoint-initdb.d/1-smarthomedb.sql
+      - ./src/main/resources/smarthomedb.sql:/docker-entrypoint-initdb.d/2-smarthomedb.sql
     command: 
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci

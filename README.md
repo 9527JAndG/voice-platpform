@@ -152,9 +152,9 @@ voice-platform/
 ├── src/main/resources/
 │   ├── application.yml                         # 开发环境配置
 │   ├── application-prod.yml                    # 生产环境配置
-│   ├── schema.sql                              # 数据库脚本
-│   ├── test-data.sql                           # 测试数据
-│   ├── oauth2-migration.sql                    # OAuth2 迁移脚本
+│   ├── smarthomedb.sql                              # 数据库脚本
+│   ├── smarthomedb.sql                           # 测试数据
+│   ├── smarthomedb.sql                    # OAuth2 迁移脚本
 │   ├── static/
 │   │   └── authorize.html                      # 授权页面（旧版）
 │   └── templates/                              # Thymeleaf 模板

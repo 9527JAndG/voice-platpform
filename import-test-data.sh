@@ -6,7 +6,7 @@
 # 说明：
 # 1. 本脚本用于导入测试数据到 MySQL 数据库
 # 2. 请先确保数据库已创建并配置正确
-# 3. 请先替换 test-data.sql 中的 YOUR_* 占位符
+# 3. 请先替换 smarthomedb.sql 中的 YOUR_* 占位符
 # ============================================
 
 # 颜色定义
@@ -23,7 +23,7 @@ DB_USER="root"
 DB_PASSWORD=""
 
 # 测试数据文件
-TEST_DATA_FILE="src/main/resources/test-data.sql"
+TEST_DATA_FILE="src/main/resources/smarthomedb.sql"
 
 echo "============================================"
 echo "测试数据导入脚本"
@@ -85,7 +85,7 @@ fi
 
 if [ -z "$DB_EXISTS" ]; then
     echo -e "${RED}错误：数据库 $DB_NAME 不存在${NC}"
-    echo "请先运行 schema.sql 创建数据库"
+    echo "请先运行 smarthomedb.sql 创建数据库"
     exit 1
 fi
 

@@ -440,10 +440,10 @@ curl -X POST http://localhost:8080/oauth2/introspect \
 
 ```bash
 # Linux/Mac
-mysql -u root -p smarthomedb < src/main/resources/oauth2-migration.sql
+mysql -u root -p smarthomedb < src/main/resources/smarthomedb.sql
 
 # Windows
-mysql -u root -p smarthomedb < src\main\resources\oauth2-migration.sql
+mysql -u root -p smarthomedb < src\main\resources\smarthomedb.sql
 ```
 
 或使用提供的导入脚本：

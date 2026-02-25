@@ -18,7 +18,7 @@ mysql -u root -p
 ```sql
 CREATE DATABASE smarthomedb DEFAULT CHARACTER SET utf8mb4;
 USE smarthomedb;
-source src/main/resources/schema.sql;
+source src/main/resources/smarthomedb.sql;
 ```
 
 ### 步骤 3: 修改配置

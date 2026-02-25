@@ -40,7 +40,7 @@ aligenie-smarthome/
 │   │
 │   └── resources/
 │       ├── application.yml                    # Spring Boot 配置文件
-│       ├── schema.sql                         # 数据库初始化脚本
+│       ├── smarthomedb.sql                         # 数据库初始化脚本
 │       └── static/
 │           └── authorize.html                 # OAuth 授权页面
 │
@@ -119,7 +119,7 @@ Spring Data JPA 仓库接口
   - OAuth 配置（过期时间等）
   - 日志配置
 
-- `schema.sql`: 数据库初始化脚本
+- `smarthomedb.sql`: 数据库初始化脚本
   - 创建数据库
   - 创建表结构
   - 插入测试数据
@@ -231,7 +231,7 @@ MySQL 数据库
 
 ### 必须修改的文件
 1. `application.yml` - 修改数据库连接信息
-2. `schema.sql` - 根据需要调整数据库结构
+2. `smarthomedb.sql` - 根据需要调整数据库结构
 
 ### 核心业务文件
 1. `OAuthService.java` - OAuth 核心逻辑
@@ -241,7 +241,7 @@ MySQL 数据库
 ### 扩展点文件
 1. `DeviceService.java` - 添加新的设备控制方法
 2. `Device.java` - 添加新的设备属性
-3. `schema.sql` - 添加新的数据表
+3. `smarthomedb.sql` - 添加新的数据表
 
 ## 📝 命名规范
 
@@ -274,7 +274,7 @@ MySQL 数据库
 → `src/main/java/com/example/aligenie/service/`
 
 ### 需要修改数据库？
-→ `src/main/resources/schema.sql`
+→ `src/main/resources/smarthomedb.sql`
 
 ### 需要查看 API 文档？
 → `API.md`

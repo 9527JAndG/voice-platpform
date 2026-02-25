@@ -6,7 +6,7 @@ REM ============================================
 REM 多平台智能音箱对接项目 - 配置替换脚本 (Windows)
 REM ============================================
 REM 说明：
-REM 本脚本用于快速替换 test-data.sql 中的平台配置占位符
+REM 本脚本用于快速替换 smarthomedb.sql 中的平台配置占位符
 REM 使用方法：
 REM   1. 编辑本脚本，填写实际的平台配置信息
 REM   2. 双击运行或执行：配置替换脚本.bat
@@ -92,7 +92,7 @@ REM ============================================
 REM 执行替换
 REM ============================================
 
-set INPUT_FILE=src\main\resources\test-data.sql
+set INPUT_FILE=src\main\resources\smarthomedb.sql
 set OUTPUT_FILE=src\main\resources\test-data-configured.sql
 
 REM 检查输入文件是否存在

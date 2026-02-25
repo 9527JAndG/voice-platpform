@@ -15,7 +15,7 @@
 mysql -u root -p
 
 # 执行数据库脚本
-source src/main/resources/schema.sql
+source src/main/resources/smarthomedb.sql
 ```
 
 ### 2. 修改配置文件

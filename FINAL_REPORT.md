@@ -177,8 +177,8 @@ src/main/java/com/voice/platform/
 ```
 src/main/resources/
 ├── application.yml
-├── schema.sql
-├── test-data.sql
+├── smarthomedb.sql
+├── smarthomedb.sql
 └── static/
     └── authorize.html
 ```
@@ -254,8 +254,8 @@ src/main/resources/
 git clone <repository-url>
 
 # 2. 配置数据库
-mysql -u root -p < src/main/resources/schema.sql
-mysql -u root -p < src/main/resources/test-data.sql
+mysql -u root -p < src/main/resources/smarthomedb.sql
+mysql -u root -p < src/main/resources/smarthomedb.sql
 
 # 3. 修改配置
 # 编辑 src/main/resources/application.yml

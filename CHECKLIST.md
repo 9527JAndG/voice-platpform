@@ -10,7 +10,7 @@
 
 ### 数据库检查
 - [ ] 已创建 smarthomedb 数据库
-- [ ] 已执行 schema.sql 脚本
+- [ ] 已执行 smarthomedb.sql 脚本
 - [ ] 数据库连接信息正确
 - [ ] 测试数据已插入
 

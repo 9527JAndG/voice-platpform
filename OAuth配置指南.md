@@ -34,7 +34,7 @@
 
 #### 更新测试数据
 
-在 `test-data.sql` 中替换：
+在 `smarthomedb.sql` 中替换：
 ```sql
 INSERT INTO oauth_clients (client_id, client_secret, redirect_uri, user_id) 
 VALUES (
@@ -76,7 +76,7 @@ VALUES (
 
 #### 更新测试数据
 
-在 `test-data.sql` 中替换：
+在 `smarthomedb.sql` 中替换：
 ```sql
 INSERT INTO oauth_clients (client_id, client_secret, redirect_uri, user_id) 
 VALUES (
@@ -117,7 +117,7 @@ VALUES (
 
 #### 更新测试数据
 
-在 `test-data.sql` 中替换：
+在 `smarthomedb.sql` 中替换：
 ```sql
 INSERT INTO oauth_clients (client_id, client_secret, redirect_uri, user_id) 
 VALUES (
@@ -166,7 +166,7 @@ VALUES (
 
 #### 更新测试数据
 
-在 `test-data.sql` 中替换：
+在 `smarthomedb.sql` 中替换：
 ```sql
 INSERT INTO oauth_clients (client_id, client_secret, redirect_uri, user_id) 
 VALUES (
@@ -235,7 +235,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 #### 更新测试数据
 
-在 `test-data.sql` 中替换：
+在 `smarthomedb.sql` 中替换：
 ```sql
 INSERT INTO oauth_clients (client_id, client_secret, redirect_uri, user_id) 
 VALUES (
@@ -254,7 +254,7 @@ VALUES (
 - [ ] 已获取 Client ID
 - [ ] 已获取 Client Secret
 - [ ] 已配置回调地址
-- [ ] 已更新 test-data.sql
+- [ ] 已更新 smarthomedb.sql
 - [ ] 已测试授权流程
 
 ### 小度音箱
@@ -262,14 +262,14 @@ VALUES (
 - [ ] 已获取 Client Secret
 - [ ] 已配置授权 URL
 - [ ] 已配置 Token URL
-- [ ] 已更新 test-data.sql
+- [ ] 已更新 smarthomedb.sql
 - [ ] 已测试授权流程
 
 ### 小爱同学
 - [ ] 已获取 App ID
 - [ ] 已获取 App Secret
 - [ ] 已配置回调地址
-- [ ] 已更新 test-data.sql
+- [ ] 已更新 smarthomedb.sql
 - [ ] 已测试授权流程
 
 ### AWS Alexa
@@ -278,7 +278,7 @@ VALUES (
 - [ ] 已获取 Redirect URL
 - [ ] 已配置 Account Linking
 - [ ] 已配置 Smart Home API
-- [ ] 已更新 test-data.sql
+- [ ] 已更新 smarthomedb.sql
 - [ ] 已测试授权流程
 
 ### Google Assistant
@@ -287,7 +287,7 @@ VALUES (
 - [ ] 已获取 Project ID
 - [ ] 已配置 Account Linking
 - [ ] 已配置 Fulfillment URL
-- [ ] 已更新 test-data.sql
+- [ ] 已更新 smarthomedb.sql
 - [ ] 已测试授权流程
 
 ---
@@ -297,7 +297,7 @@ VALUES (
 ### Client Secret 管理
 
 1. **不要提交到版本控制**
-   - 将 `test-data.sql` 添加到 `.gitignore`
+   - 将 `smarthomedb.sql` 添加到 `.gitignore`
    - 或使用环境变量
 
 2. **定期更换**
@@ -349,7 +349,7 @@ String clientSecret = System.getenv("ALIGENIE_CLIENT_SECRET");
 
 ```bash
 # 确保已替换所有 YOUR_* 占位符
-mysql -u root -p smarthomedb < src/main/resources/test-data.sql
+mysql -u root -p smarthomedb < src/main/resources/smarthomedb.sql
 ```
 
 ### 2. 验证数据
