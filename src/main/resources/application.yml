@@ -1,0 +1,52 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: aligenie-smarthome
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/smarthomedb?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: Ry123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+# OAuth2 配置
+oauth2:
+  # 授权码有效期（秒）
+  code-expire-seconds: 120
+  # Access Token 有效期（秒）
+  access-token-expire-seconds: 259200
+  # Refresh Token 有效期（秒）
+  refresh-token-expire-seconds: 2592000
+  
+  # JWT 配置
+  jwt:
+    # JWT 签名密钥（生产环境请使用更复杂的密钥）
+    secret: VoicePlatformJwtSecretKey2024ForSmartHomePlatformIntegration
+    # JWT 发行者
+    issuer: https://voice-platform.example.com
+    # Access Token 有效期（秒）
+    access-token-validity: 3600
+    # Refresh Token 有效期（秒）
+    refresh-token-validity: 2592000
+    # Token 类型：jwt 或 opaque
+    token-type: jwt
+
+# 日志配置
+logging:
+  level:
+    com.voice.platform: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG

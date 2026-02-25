@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授权确认 - 天猫精灵智能家居</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .permissions {
+            margin-bottom: 30px;
+        }
+        
+        .permissions h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+        
+        .permission-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: #667eea;
+        }
+        
+        .permission-text {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e9ecef;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🏠 智能家居授权</h1>
+            <p>天猫精灵请求访问您的设备</p>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-item">
+                <span class="info-label">应用名称：</span>
+                <span class="info-value">天猫精灵</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">请求方：</span>
+                <span class="info-value" id="clientId">-</span>
+            </div>
+        </div>
+        
+        <div class="permissions">
+            <h3>授权后，天猫精灵将获得以下权限：</h3>
+            <div class="permission-item">
+                <span class="permission-icon">✓</span>
+                <span class="permission-text">查看您的设备列表</span>
+            </div>
+            <div class="permission-item">
+                <span class="permission-icon">✓</span>
+                <span class="permission-text">控制您的智能设备</span>
+            </div>
+            <div class="permission-item">
+                <span class="permission-icon">✓</span>
+                <span class="permission-text">查询设备状态信息</span>
+            </div>
+        </div>
+        
+        <form id="authorizeForm" method="POST" action="/authorize/confirm">
+            <input type="hidden" name="client_id" id="hiddenClientId">
+            <input type="hidden" name="redirect_uri" id="hiddenRedirectUri">
+            <input type="hidden" name="state" id="hiddenState">
+            <input type="hidden" name="authorize" id="authorizeValue">
+            
+            <div class="buttons">
+                <button type="button" class="btn btn-secondary" onclick="deny()">拒绝</button>
+                <button type="button" class="btn btn-primary" onclick="approve()">授权</button>
+            </div>
+        </form>
+        
+        <div class="footer">
+            授权后可随时在设置中取消授权
+        </div>
+    </div>
+    
+    <script>
+        // 从 URL 参数中获取信息
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('client_id');
+        const redirectUri = urlParams.get('redirect_uri');
+        const state = urlParams.get('state');
+        
+        // 显示客户端ID
+        document.getElementById('clientId').textContent = clientId || '-';
+        
+        // 设置隐藏字段
+        document.getElementById('hiddenClientId').value = clientId;
+        document.getElementById('hiddenRedirectUri').value = redirectUri;
+        document.getElementById('hiddenState').value = state;
+        
+        function approve() {
+            document.getElementById('authorizeValue').value = 'yes';
+            document.getElementById('authorizeForm').submit();
+        }
+        
+        function deny() {
+            document.getElementById('authorizeValue').value = 'no';
+            document.getElementById('authorizeForm').submit();
+        }
+    </script>
+</body>
+</html>

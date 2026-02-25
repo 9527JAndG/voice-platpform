@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授权同意 - OAuth2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .consent-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .client-info {
+            background: #f7f9fc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .client-info h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .client-info .client-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .permissions {
+            margin-top: 20px;
+        }
+        
+        .permissions h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .permission-list {
+            list-style: none;
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .permission-item .icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .permission-item .text {
+            flex: 1;
+        }
+        
+        .permission-item .title {
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .permission-item .description {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
+        .warning strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-approve {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-deny {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <div class="header">
+            <h1>🔐 授权请求</h1>
+            <p>请确认您要授予以下权限</p>
+        </div>
+        
+        <div class="client-info">
+            <h2>应用信息</h2>
+            <div class="client-name" th:text="${clientId}">Client Application</div>
+            <p style="color: #666; font-size: 14px;">正在请求访问您的智能家居设备</p>
+        </div>
+        
+        <div class="permissions">
+            <h3>请求的权限</h3>
+            <ul class="permission-list">
+                <li class="permission-item" th:if="${scope != null and scope.contains('device:control')}">
+                    <span class="icon">🎮</span>
+                    <div class="text">
+                        <div class="title">控制设备</div>
+                        <div class="description">开关、暂停、继续、设置模式等</div>
+                    </div>
+                </li>
+                <li class="permission-item" th:if="${scope != null and scope.contains('device:read')}">
+                    <span class="icon">👁️</span>
+                    <div class="text">
+                        <div class="title">查看设备信息</div>
+                        <div class="description">查看设备状态、电量、工作模式等</div>
+                    </div>
+                </li>
+                <li class="permission-item" th:if="${scope == null or scope.isEmpty()}">
+                    <span class="icon">🔓</span>
+                    <div class="text">
+                        <div class="title">基本访问权限</div>
+                        <div class="description">访问您的基本账户信息</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ 安全提示</strong>
+            授权后，该应用将能够代表您执行上述操作。请确保您信任此应用。
+        </div>
+        
+        <form action="/oauth2/consent" method="post">
+            <div class="actions">
+                <button type="submit" name="approve" value="false" class="btn btn-deny">
+                    拒绝
+                </button>
+                <button type="submit" name="approve" value="true" class="btn btn-approve">
+                    授权
+                </button>
+            </div>
+        </form>
+        
+        <div class="footer">
+            您可以随时在账户设置中撤销此授权
+        </div>
+    </div>
+</body>
+</html>
