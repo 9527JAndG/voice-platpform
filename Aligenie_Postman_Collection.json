@@ -1,0 +1,655 @@
+{
+  "info": {
+    "name": "天猫精灵智能家居 API",
+    "description": "天猫精灵智能家居控制 API 测试集合\n\n## 使用说明\n\n1. 导入此集合到 Postman\n2. 设置环境变量:\n   - base_url: http://localhost:8080\n   - username: user1\n   - password: password\n   - client_id: aligenie-client\n   - client_secret: aligenie-secret\n3. 先运行 \"获取访问令牌\" 请求\n4. access_token 会自动保存到环境变量\n5. 运行其他测试请求\n\n## 测试覆盖\n\n- 设备发现\n- 设备控制 (开/关/暂停/继续/设置模式)\n- 设备查询\n- 错误处理\n\n版本: 2.0\n更新时间: 2026-02-25",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "天猫精灵测试"
+  },
+  "item": [
+    {
+      "name": "OAuth2 认证",
+      "item": [
+        {
+          "name": "获取访问令牌",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has access_token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('access_token');",
+                  "    pm.environment.set(\"access_token\", jsonData.access_token);",
+                  "});",
+                  "",
+                  "pm.test(\"Token type is Bearer\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.token_type).to.eql(\"Bearer\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "{{username}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{password}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/oauth2/token",
+              "host": ["{{base_url}}"],
+              "path": ["oauth2", "token"]
+            },
+            "description": "使用密码模式获取访问令牌"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "设备发现",
+      "item": [
+        {
+          "name": "发现所有设备",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is DiscoveryResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.namespace).to.eql(\"AliGenie.Iot.Device.Discovery\");",
+                  "    pm.expect(jsonData.header.name).to.eql(\"DiscoveryResponse\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains devices\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.payload).to.have.property('devices');",
+                  "    pm.expect(jsonData.payload.devices).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Discovery\",\n    \"name\": \"DiscoveryDevices\",\n    \"messageId\": \"msg-discovery-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/discovery",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "discovery"]
+            },
+            "description": "发现用户的所有智能设备"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "设备控制",
+      "item": [
+        {
+          "name": "设备开机",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is TurnOnResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"TurnOnResponse\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOn\",\n    \"messageId\": \"msg-turnon-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "打开设备电源"
+          },
+          "response": []
+        },
+        {
+          "name": "设备关机",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is TurnOffResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"TurnOffResponse\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOff\",\n    \"messageId\": \"msg-turnoff-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "关闭设备电源"
+          },
+          "response": []
+        },
+        {
+          "name": "设备暂停",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is PauseResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"PauseResponse\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"Pause\",\n    \"messageId\": \"msg-pause-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "暂停设备工作"
+          },
+          "response": []
+        },
+        {
+          "name": "设备继续",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is ContinueResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"ContinueResponse\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"Continue\",\n    \"messageId\": \"msg-continue-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "继续设备工作"
+          },
+          "response": []
+        },
+        {
+          "name": "设置模式 - 自动",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is SetModeResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"SetModeResponse\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"msg-setmode-auto-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\",\n    \"mode\": \"auto\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "设置设备为自动模式"
+          },
+          "response": []
+        },
+        {
+          "name": "设置模式 - 定点",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"msg-setmode-spot-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\",\n    \"mode\": \"spot\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "设置设备为定点清扫模式"
+          },
+          "response": []
+        },
+        {
+          "name": "设置模式 - 沿边",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"msg-setmode-edge-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\",\n    \"mode\": \"edge\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "设置设备为沿边清扫模式"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "设备查询",
+      "item": [
+        {
+          "name": "查询设备状态",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is QueryResponse\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.namespace).to.eql(\"AliGenie.Iot.Device.Query\");",
+                  "    pm.expect(jsonData.header.name).to.eql(\"QueryResponse\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains properties\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.payload).to.have.property('properties');",
+                  "    pm.expect(jsonData.payload.properties).to.have.property('powerstate');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Query\",\n    \"name\": \"Query\",\n    \"messageId\": \"msg-query-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/query",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "query"]
+            },
+            "description": "查询设备当前状态"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "错误处理",
+      "item": [
+        {
+          "name": "无效Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is INVALID_TOKEN\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.payload.errorCode).to.eql(\"INVALID_TOKEN\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_12345"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Discovery\",\n    \"name\": \"DiscoveryDevices\",\n    \"messageId\": \"msg-error-token-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/discovery",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "discovery"]
+            },
+            "description": "测试无效Token的错误处理"
+          },
+          "response": []
+        },
+        {
+          "name": "设备不存在",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is DEVICE_NOT_FOUND\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"ErrorResponse\");",
+                  "    pm.expect(jsonData.payload.errorCode).to.eql(\"DEVICE_NOT_FOUND\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"TurnOn\",\n    \"messageId\": \"msg-error-device-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"non-existent-device\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "测试设备不存在的错误处理"
+          },
+          "response": []
+        },
+        {
+          "name": "无效模式",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Error code is INVALID_MODE\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.header.name).to.eql(\"ErrorResponse\");",
+                  "    pm.expect(jsonData.payload.errorCode).to.eql(\"INVALID_MODE\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"header\": {\n    \"namespace\": \"AliGenie.Iot.Device.Control\",\n    \"name\": \"SetMode\",\n    \"messageId\": \"msg-error-mode-001\",\n    \"payloadVersion\": \"1\"\n  },\n  \"payload\": {\n    \"deviceId\": \"vacuum-001\",\n    \"mode\": \"invalid_mode\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/aligenie/control",
+              "host": ["{{base_url}}"],
+              "path": ["aligenie", "control"]
+            },
+            "description": "测试无效模式的错误处理"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "user1",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "aligenie-client",
+      "type": "string"
+    },
+    {
+      "key": "client_secret",
+      "value": "aligenie-secret",
+      "type": "string"
+    }
+  ]
+}

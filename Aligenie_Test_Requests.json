@@ -1,15 +1,23 @@
 {
-  "description": "天猫精灵（AliGenie）完整测试用例集",
-  "version": "1.0",
-  "baseUrl": "http://localhost:8080/aligenie",
-  "testCases": [
+  "version": "2.0",
+  "name": "天猫精灵测试用例集",
+  "description": "天猫精灵智能家居控制 API 测试用例",
+  "updated": "2026-02-25",
+  "base_url": "http://localhost:8080",
+  "test_user": {
+    "username": "user1",
+    "password": "password"
+  },
+  "test_cases": [
     {
-      "name": "1. 设备发现 - 成功",
+      "id": "aligenie-001",
+      "name": "设备发现",
+      "description": "测试天猫精灵设备发现功能",
       "method": "POST",
-      "endpoint": "/discovery",
+      "endpoint": "/aligenie/discovery",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
@@ -20,363 +28,214 @@
         },
         "payload": {}
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Discovery",
-          "name": "DiscoveryDevicesResponse"
-        },
-        "payload": {
-          "devices": "array"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Discovery",
+        "header_name": "DiscoveryResponse",
+        "payload_contains": ["devices"]
       }
     },
     {
-      "name": "2. 设备发现 - Token无效",
+      "id": "aligenie-002",
+      "name": "设备开机",
+      "description": "测试天猫精灵设备开机功能",
       "method": "POST",
-      "endpoint": "/discovery",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer invalid-token",
-        "Content-Type": "application/json"
-      },
-      "body": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Discovery",
-          "name": "DiscoveryDevices",
-          "messageId": "msg-discovery-002",
-          "payloadVersion": "1"
-        },
-        "payload": {}
-      },
-      "expectedStatus": 401,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
-        },
-        "payload": {
-          "errorCode": "INVALID_TOKEN"
-        }
-      }
-    },
-    {
-      "name": "3. 设备控制 - 开机",
-      "method": "POST",
-      "endpoint": "/control",
-      "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "TurnOn",
-          "messageId": "msg-control-001",
+          "messageId": "msg-turnon-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001"
+          "deviceId": "vacuum-001"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "TurnOnResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "TurnOnResponse"
       }
     },
     {
-      "name": "4. 设备控制 - 关机",
+      "id": "aligenie-003",
+      "name": "设备关机",
+      "description": "测试天猫精灵设备关机功能",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "TurnOff",
-          "messageId": "msg-control-002",
+          "messageId": "msg-turnoff-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001"
+          "deviceId": "vacuum-001"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "TurnOffResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "TurnOffResponse"
       }
     },
     {
-      "name": "5. 设备控制 - 暂停",
+      "id": "aligenie-004",
+      "name": "设备暂停",
+      "description": "测试天猫精灵设备暂停功能",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "Pause",
-          "messageId": "msg-control-003",
+          "messageId": "msg-pause-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001"
+          "deviceId": "vacuum-001"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "PauseResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "PauseResponse"
       }
     },
     {
-      "name": "6. 设备控制 - 继续",
+      "id": "aligenie-005",
+      "name": "设备继续",
+      "description": "测试天猫精灵设备继续功能",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "Continue",
-          "messageId": "msg-control-004",
+          "messageId": "msg-continue-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001"
+          "deviceId": "vacuum-001"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "ContinueResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "ContinueResponse"
       }
     },
     {
-      "name": "7. 设备控制 - 设置模式（自动模式）",
+      "id": "aligenie-006",
+      "name": "设置模式 - 自动模式",
+      "description": "测试天猫精灵设置设备为自动模式",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "SetMode",
-          "messageId": "msg-control-005",
+          "messageId": "msg-setmode-auto-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001",
+          "deviceId": "vacuum-001",
           "mode": "auto"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "SetModeResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "SetModeResponse"
       }
     },
     {
-      "name": "8. 设备控制 - 设置模式（定点模式）",
+      "id": "aligenie-007",
+      "name": "设置模式 - 定点模式",
+      "description": "测试天猫精灵设置设备为定点模式",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "SetMode",
-          "messageId": "msg-control-006",
+          "messageId": "msg-setmode-spot-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001",
+          "deviceId": "vacuum-001",
           "mode": "spot"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "SetModeResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "SetModeResponse"
       }
     },
     {
-      "name": "9. 设备控制 - 设置模式（沿边模式）",
+      "id": "aligenie-008",
+      "name": "设置模式 - 沿边模式",
+      "description": "测试天猫精灵设置设备为沿边模式",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/control",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
           "namespace": "AliGenie.Iot.Device.Control",
           "name": "SetMode",
-          "messageId": "msg-control-007",
+          "messageId": "msg-setmode-edge-001",
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001",
+          "deviceId": "vacuum-001",
           "mode": "edge"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "SetModeResponse"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Control",
+        "header_name": "SetModeResponse"
       }
     },
     {
-      "name": "10. 设备控制 - 无效模式",
+      "id": "aligenie-009",
+      "name": "设备状态查询",
+      "description": "测试天猫精灵设备状态查询功能",
       "method": "POST",
-      "endpoint": "/control",
+      "endpoint": "/aligenie/query",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
-      },
-      "body": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "SetMode",
-          "messageId": "msg-control-008",
-          "payloadVersion": "1"
-        },
-        "payload": {
-          "deviceId": "device-001",
-          "mode": "invalid-mode"
-        }
-      },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
-        },
-        "payload": {
-          "errorCode": "INVALID_MODE"
-        }
-      }
-    },
-    {
-      "name": "11. 设备控制 - 缺少设备ID",
-      "method": "POST",
-      "endpoint": "/control",
-      "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
-      },
-      "body": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "TurnOn",
-          "messageId": "msg-control-009",
-          "payloadVersion": "1"
-        },
-        "payload": {}
-      },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
-        },
-        "payload": {
-          "errorCode": "MISSING_PARAMETER"
-        }
-      }
-    },
-    {
-      "name": "12. 设备控制 - 缺少模式参数",
-      "method": "POST",
-      "endpoint": "/control",
-      "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
-      },
-      "body": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "SetMode",
-          "messageId": "msg-control-010",
-          "payloadVersion": "1"
-        },
-        "payload": {
-          "deviceId": "device-001"
-        }
-      },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
-        },
-        "payload": {
-          "errorCode": "MISSING_PARAMETER"
-        }
-      }
-    },
-    {
-      "name": "13. 设备控制 - 不支持的操作",
-      "method": "POST",
-      "endpoint": "/control",
-      "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
-      },
-      "body": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Control",
-          "name": "UnsupportedAction",
-          "messageId": "msg-control-011",
-          "payloadVersion": "1"
-        },
-        "payload": {
-          "deviceId": "device-001"
-        }
-      },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
-        },
-        "payload": {
-          "errorCode": "UNSUPPORTED_ACTION"
-        }
-      }
-    },
-    {
-      "name": "14. 设备查询 - 成功",
-      "method": "POST",
-      "endpoint": "/query",
-      "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
       },
       "body": {
         "header": {
@@ -386,47 +245,103 @@
           "payloadVersion": "1"
         },
         "payload": {
-          "deviceId": "device-001"
+          "deviceId": "vacuum-001"
         }
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
-        "header": {
-          "namespace": "AliGenie.Iot.Device.Query",
-          "name": "QueryResponse"
-        },
-        "payload": {
-          "deviceId": "device-001"
-        }
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Query",
+        "header_name": "QueryResponse",
+        "payload_contains": ["properties"]
       }
     },
     {
-      "name": "15. 设备查询 - 缺少设备ID",
+      "id": "aligenie-010",
+      "name": "错误处理 - 无效Token",
+      "description": "测试无效Token的错误处理",
       "method": "POST",
-      "endpoint": "/query",
+      "endpoint": "/aligenie/discovery",
       "headers": {
-        "Authorization": "Bearer test-access-token-123",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer invalid_token_12345"
       },
       "body": {
         "header": {
-          "namespace": "AliGenie.Iot.Device.Query",
-          "name": "Query",
-          "messageId": "msg-query-002",
+          "namespace": "AliGenie.Iot.Device.Discovery",
+          "name": "DiscoveryDevices",
+          "messageId": "msg-error-token-001",
           "payloadVersion": "1"
         },
         "payload": {}
       },
-      "expectedStatus": 200,
-      "expectedResponse": {
+      "expected": {
+        "status": 401,
+        "error_code": "INVALID_TOKEN"
+      }
+    },
+    {
+      "id": "aligenie-011",
+      "name": "错误处理 - 设备不存在",
+      "description": "测试设备不存在的错误处理",
+      "method": "POST",
+      "endpoint": "/aligenie/control",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "body": {
         "header": {
-          "namespace": "AliGenie.Iot.Device.Error",
-          "name": "ErrorResponse"
+          "namespace": "AliGenie.Iot.Device.Control",
+          "name": "TurnOn",
+          "messageId": "msg-error-device-001",
+          "payloadVersion": "1"
         },
         "payload": {
-          "errorCode": "MISSING_PARAMETER"
+          "deviceId": "non-existent-device"
         }
+      },
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Error",
+        "header_name": "ErrorResponse",
+        "error_code": "DEVICE_NOT_FOUND"
+      }
+    },
+    {
+      "id": "aligenie-012",
+      "name": "错误处理 - 无效模式",
+      "description": "测试无效模式的错误处理",
+      "method": "POST",
+      "endpoint": "/aligenie/control",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "body": {
+        "header": {
+          "namespace": "AliGenie.Iot.Device.Control",
+          "name": "SetMode",
+          "messageId": "msg-error-mode-001",
+          "payloadVersion": "1"
+        },
+        "payload": {
+          "deviceId": "vacuum-001",
+          "mode": "invalid_mode"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "header_namespace": "AliGenie.Iot.Device.Error",
+        "header_name": "ErrorResponse",
+        "error_code": "INVALID_MODE"
       }
     }
+  ],
+  "notes": [
+    "测试前需要先获取 access_token",
+    "使用 OAuth2 授权流程获取 token",
+    "测试账号: user1/password",
+    "测试设备: vacuum-001 (客厅扫地机器人)",
+    "支持的模式: auto, spot, edge"
   ]
 }

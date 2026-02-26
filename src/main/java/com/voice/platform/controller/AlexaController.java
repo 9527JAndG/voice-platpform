@@ -3,7 +3,10 @@ package com.voice.platform.controller;
 import com.voice.platform.dto.alexa.AlexaRequest;
 import com.voice.platform.dto.alexa.AlexaResponse;
 import com.voice.platform.dto.alexa.DiscoveredEndpoint;
+import com.voice.platform.model.AlexaToken;
 import com.voice.platform.model.Device;
+import com.voice.platform.service.AlexaStateReporter;
+import com.voice.platform.service.AlexaTokenService;
 import com.voice.platform.service.DeviceService;
 import com.voice.platform.service.OAuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +47,12 @@ public class AlexaController {
     
     @Autowired
     private DeviceService deviceService;
+    
+    @Autowired
+    private AlexaTokenService alexaTokenService;
+    
+    @Autowired
+    private AlexaStateReporter alexaStateReporter;
     
     /**
      * Alexa Smart Home 主入口
@@ -485,21 +494,43 @@ public class AlexaController {
         String messageId = request.getDirective().getHeader().getMessageId();
         
         try {
-            log.info("处理 AcceptGrant 请求: messageId={}", messageId);
+            log.info("=== 处理 AcceptGrant 请求 ===");
+            log.info("MessageId: {}", messageId);
             
-            // 从 payload 中获取授权码
+            // 从 payload 中获取授权码和 grantee
             Map<String, Object> payload = request.getDirective().getPayload();
             @SuppressWarnings("unchecked")
             Map<String, Object> grant = (Map<String, Object>) payload.get("grant");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> grantee = (Map<String, Object>) payload.get("grantee");
             
-            if (grant != null) {
-                String code = (String) grant.get("code");
-                String type = (String) grant.get("type");
-                log.info("收到授权: type={}, code={}", type, code != null ? code.substring(0, Math.min(10, code.length())) + "..." : "null");
-                
-                // TODO: 存储授权信息，用于后续的 proactive state reporting
-                // 这里可以将授权码交换为访问令牌并存储
+            if (grant == null || grantee == null) {
+                log.error("AcceptGrant 请求缺少必要参数");
+                return ResponseEntity.ok(AlexaResponse.createErrorResponse(
+                    messageId, null, null,
+                    "INVALID_DIRECTIVE", "缺少 grant 或 grantee 参数"
+                ));
             }
+            
+            String code = (String) grant.get("code");
+            String type = (String) grant.get("type");
+            String granteeToken = (String) grantee.get("token");
+            
+            log.info("授权信息: type={}, code={}, granteeToken={}", 
+                    type, 
+                    code != null ? code.substring(0, Math.min(10, code.length())) + "..." : "null",
+                    granteeToken != null ? granteeToken.substring(0, Math.min(10, granteeToken.length())) + "..." : "null");
+            
+            // 用授权码换取 Alexa Access Token
+            // TODO: 从 granteeToken 或其他方式获取真实的 userId
+            Long userId = 1L; // 简化处理，实际应从授权流程中获取
+            
+            AlexaToken alexaToken = alexaTokenService.exchangeToken(code, userId);
+            
+            // 存储 Token（用于后续的状态报告）
+            alexaTokenService.saveToken(granteeToken, alexaToken);
+            
+            log.info("✓ AcceptGrant 处理成功: userId={}", userId);
             
             // 返回成功响应
             Map<String, Object> responsePayload = new HashMap<>();
@@ -516,11 +547,10 @@ public class AlexaController {
                     .build())
                 .build();
             
-            log.info("AcceptGrant 处理成功");
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
-            log.error("AcceptGrant 处理失败", e);
+            log.error("AcceptGrant 处理失败: messageId={}", messageId, e);
             return ResponseEntity.ok(AlexaResponse.createErrorResponse(
                 messageId, null, null,
                 "ACCEPT_GRANT_FAILED", "授权接受失败: " + e.getMessage()

@@ -4,12 +4,30 @@
 
 ### 1. 环境要求
 
-- ✅ 项目已启动（`mvn spring-boot:run`）
+- ✅ 项目已启动（`mvn spring-boot:run` 或 `./start.sh`）
 - ✅ 数据库已导入测试数据
 - ✅ OAuth 服务正常运行
+- ✅ Alexa Token 服务已配置
 - ✅ HTTPS 已配置（生产环境）
 
-### 2. 测试账号
+### 2. 配置检查
+
+**application.yml 配置**：
+```yaml
+alexa:
+  client-id: ${ALEXA_CLIENT_ID:amzn1.application-oa2-client.example}
+  client-secret: ${ALEXA_CLIENT_SECRET:your-client-secret-here}
+  event-gateway-url: https://api.amazonalexa.com/v3/events
+  token-exchange-url: https://api.amazon.com/auth/o2/token
+```
+
+**环境变量设置**：
+```bash
+export ALEXA_CLIENT_ID=amzn1.application-oa2-client.xxxxx
+export ALEXA_CLIENT_SECRET=your-secret-here
+```
+
+### 3. 测试账号
 
 | 用户名 | 密码 | 设备数量 |
 |--------|------|---------|
@@ -24,6 +42,58 @@
 | robot_003 | Study Room Vacuum | 在线 | 开机 | spot | 15% |
 
 ## 🧪 测试步骤
+
+### 步骤 0：测试 AcceptGrant 授权（新增）
+
+**目的**：验证授权接受和 Token 交换功能
+
+**请求**：
+```http
+POST http://localhost:8080/alexa
+Content-Type: application/json
+
+{
+  "directive": {
+    "header": {
+      "namespace": "Alexa.Authorization",
+      "name": "AcceptGrant",
+      "payloadVersion": "3",
+      "messageId": "test-acceptgrant-001"
+    },
+    "payload": {
+      "grant": {
+        "type": "OAuth2.AuthorizationCode",
+        "code": "test-authorization-code"
+      },
+      "grantee": {
+        "type": "BearerToken",
+        "token": "test-grantee-token"
+      }
+    }
+  }
+}
+```
+
+**预期响应**：
+```json
+{
+  "event": {
+    "header": {
+      "namespace": "Alexa.Authorization",
+      "name": "AcceptGrant.Response",
+      "payloadVersion": "3",
+      "messageId": "..."
+    },
+    "payload": {}
+  }
+}
+```
+
+**验证**：
+```sql
+-- 检查 Alexa Token 是否保存
+SELECT * FROM alexa_tokens WHERE user_id = 1;
+```
 
 ### 步骤 1：配置 Alexa Skill
 
@@ -376,7 +446,40 @@ Content-Type: application/json
 - 使用过期的 access_token
 - 预期返回 INVALID_AUTHORIZATION_CREDENTIAL 错误
 
-### 场景 4：并发控制
+### 场景 4：Token 自动刷新（新增）
+
+**测试 Token 过期和刷新**：
+1. 修改数据库中的 Token 过期时间
+2. 调用需要 Token 的接口
+3. 验证 Token 自动刷新
+
+```sql
+-- 设置 Token 为即将过期
+UPDATE alexa_tokens 
+SET expires_at = DATE_ADD(NOW(), INTERVAL 4 MINUTE)
+WHERE user_id = 1;
+```
+
+**预期结果**：
+- Token 自动刷新
+- 日志显示 "Alexa Token 已过期，开始刷新"
+- 日志显示 "✓ Alexa Token 刷新成功"
+
+### 场景 5：ChangeReport 状态推送（待集成）
+
+**测试主动状态推送**：
+1. 确保 AcceptGrant 已完成
+2. 通过 API 控制设备
+3. 检查日志确认 ChangeReport 发送
+
+**预期日志**：
+```
+检测到电源状态变化: off -> on
+✓ 状态报告发送成功: deviceId=robot_001, deviceName=Living Room Vacuum, changes=1
+Event Gateway 响应成功: status=202
+```
+
+### 场景 6：并发控制
 
 **同时控制多个设备**：
 ```
@@ -428,27 +531,34 @@ Content-Type: application/json
 ## 📝 测试检查清单
 
 ### 功能测试
+- [ ] AcceptGrant 授权成功（新增）
+- [ ] Token 保存到数据库（新增）
+- [ ] Token 自动刷新（新增）
 - [ ] 设备发现成功
 - [ ] 开机功能正常
 - [ ] 关机功能正常
 - [ ] 模式切换正常
 - [ ] 状态查询正常
+- [ ] ChangeReport 推送（待集成）
 
 ### 错误处理
 - [ ] 无效 Token 处理
 - [ ] 设备不存在处理
 - [ ] 设备离线处理
 - [ ] 无效参数处理
+- [ ] Token 刷新失败处理（新增）
 
 ### 性能测试
 - [ ] 响应时间 < 3 秒
 - [ ] 并发请求处理
 - [ ] 大量设备发现
+- [ ] Token 刷新性能（新增）
 
 ### 安全测试
 - [ ] Token 验证
 - [ ] 权限检查
 - [ ] HTTPS 加密
+- [ ] Token 安全存储（新增）
 
 ## 📞 技术支持
 
@@ -459,6 +569,7 @@ Content-Type: application/json
 
 ---
 
-**最后更新**：2026-02-24  
-**测试状态**：✅ Demo 已完成  
-**建议测试时间**：2-3 小时
+**最后更新**：2026-02-25  
+**测试状态**：✅ 核心功能已实现，待完整测试  
+**建议测试时间**：2-3 小时  
+**实现进度**：85%

@@ -1,13 +1,71 @@
 {
   "info": {
     "name": "Alexa Smart Home API 测试集合",
-    "description": "用于测试 Alexa Smart Home Skill 的完整请求集合",
-    "version": "1.0.0"
+    "description": "用于测试 Alexa Smart Home Skill 的完整请求集合（包含 AcceptGrant 和 ChangeReport）",
+    "version": "2.0.0",
+    "author": "Kiro AI Assistant",
+    "updated": "2026-02-25"
   },
   "tests": [
     {
+      "name": "0. 授权接受 (AcceptGrant) - 新增",
+      "description": "测试接受授权请求，用授权码换取 Alexa Access Token",
+      "priority": "high",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.Authorization",
+              "name": "AcceptGrant",
+              "payloadVersion": "3",
+              "messageId": "test-acceptgrant-001"
+            },
+            "payload": {
+              "grant": {
+                "type": "OAuth2.AuthorizationCode",
+                "code": "test_authorization_code_123"
+              },
+              "grantee": {
+                "type": "BearerToken",
+                "token": "test_grantee_token_456"
+              }
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "event": {
+            "header": {
+              "namespace": "Alexa.Authorization",
+              "name": "AcceptGrant.Response",
+              "payloadVersion": "3"
+            },
+            "payload": {}
+          }
+        }
+      },
+      "validation": [
+        "检查数据库 alexa_tokens 表是否有新记录",
+        "验证 access_token 和 refresh_token 已保存",
+        "确认 user_id 和 grantee_token 正确关联"
+      ],
+      "notes": [
+        "这是用户在 Alexa App 中启用技能时的第一步",
+        "成功后会保存 Alexa Access Token 到数据库",
+        "为后续的 ChangeReport 状态推送做准备"
+      ]
+    },
+    {
       "name": "1. 设备发现 (Discovery)",
       "description": "测试设备发现功能，返回用户的所有设备",
+      "priority": "high",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -37,18 +95,55 @@
           "event": {
             "header": {
               "namespace": "Alexa.Discovery",
-              "name": "Discover.Response"
+              "name": "Discover.Response",
+              "payloadVersion": "3"
             },
             "payload": {
-              "endpoints": "array"
+              "endpoints": [
+                {
+                  "endpointId": "device-001",
+                  "manufacturerName": "Smart Home Demo",
+                  "friendlyName": "Living Room Vacuum",
+                  "displayCategories": ["VACUUM_CLEANER"],
+                  "capabilities": [
+                    {
+                      "type": "AlexaInterface",
+                      "interface": "Alexa",
+                      "version": "3"
+                    },
+                    {
+                      "type": "AlexaInterface",
+                      "interface": "Alexa.PowerController",
+                      "version": "3"
+                    },
+                    {
+                      "type": "AlexaInterface",
+                      "interface": "Alexa.ModeController",
+                      "version": "3",
+                      "instance": "VacuumMode"
+                    },
+                    {
+                      "type": "AlexaInterface",
+                      "interface": "Alexa.EndpointHealth",
+                      "version": "3"
+                    }
+                  ]
+                }
+              ]
             }
           }
         }
-      }
+      },
+      "validation": [
+        "验证返回的设备数量正确",
+        "检查每个设备包含所有必需的 capabilities",
+        "确认 EndpointHealth capability 存在"
+      ]
     },
     {
       "name": "2. 开机 (TurnOn)",
       "description": "测试设备开机功能",
+      "priority": "high",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -69,7 +164,7 @@
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {}
@@ -82,24 +177,47 @@
           "event": {
             "header": {
               "namespace": "Alexa",
-              "name": "Response"
-            }
+              "name": "Response",
+              "payloadVersion": "3",
+              "correlationToken": "test-correlation-001"
+            },
+            "endpoint": {
+              "endpointId": "device-001"
+            },
+            "payload": {}
           },
           "context": {
             "properties": [
               {
                 "namespace": "Alexa.PowerController",
                 "name": "powerState",
-                "value": "ON"
+                "value": "ON",
+                "timeOfSample": "ISO8601",
+                "uncertaintyInMilliseconds": 500
+              },
+              {
+                "namespace": "Alexa.EndpointHealth",
+                "name": "connectivity",
+                "value": {
+                  "value": "OK"
+                },
+                "timeOfSample": "ISO8601",
+                "uncertaintyInMilliseconds": 500
               }
             ]
           }
         }
-      }
+      },
+      "validation": [
+        "验证 powerState 为 ON",
+        "检查 connectivity 为 OK",
+        "确认数据库中设备状态已更新"
+      ]
     },
     {
       "name": "3. 关机 (TurnOff)",
       "description": "测试设备关机功能",
+      "priority": "high",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -120,7 +238,7 @@
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {}
@@ -142,15 +260,27 @@
                 "namespace": "Alexa.PowerController",
                 "name": "powerState",
                 "value": "OFF"
+              },
+              {
+                "namespace": "Alexa.EndpointHealth",
+                "name": "connectivity",
+                "value": {
+                  "value": "OK"
+                }
               }
             ]
           }
         }
-      }
+      },
+      "validation": [
+        "验证 powerState 为 OFF",
+        "检查数据库中设备状态已更新为 off"
+      ]
     },
     {
       "name": "4. 设置模式 - Auto (SetMode)",
       "description": "测试设置清扫模式为自动模式",
+      "priority": "medium",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -171,7 +301,7 @@
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {
@@ -193,11 +323,16 @@
             ]
           }
         }
-      }
+      },
+      "validation": [
+        "验证 mode 为 Auto",
+        "检查数据库中 work_mode 已更新为 auto"
+      ]
     },
     {
       "name": "5. 设置模式 - Spot (SetMode)",
       "description": "测试设置清扫模式为定点模式",
+      "priority": "medium",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -218,7 +353,7 @@
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {
@@ -243,8 +378,110 @@
       }
     },
     {
-      "name": "6. 状态报告 (ReportState)",
+      "name": "6. 设置模式 - Edge (SetMode)",
+      "description": "测试设置清扫模式为沿边模式",
+      "priority": "medium",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.ModeController",
+              "name": "SetMode",
+              "payloadVersion": "3",
+              "messageId": "test-setmode-003",
+              "correlationToken": "test-correlation-005"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "device-001",
+              "cookie": {}
+            },
+            "payload": {
+              "mode": "Edge"
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.ModeController",
+                "name": "mode",
+                "value": "Edge"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "7. 调整模式 (AdjustMode) - 新增",
+      "description": "测试循环切换清扫模式",
+      "priority": "medium",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/alexa",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "directive": {
+            "header": {
+              "namespace": "Alexa.ModeController",
+              "name": "AdjustMode",
+              "payloadVersion": "3",
+              "messageId": "test-adjustmode-001",
+              "correlationToken": "test-correlation-006"
+            },
+            "endpoint": {
+              "scope": {
+                "type": "BearerToken",
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "device-001",
+              "cookie": {}
+            },
+            "payload": {
+              "modeDelta": 1
+            }
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "context": {
+            "properties": [
+              {
+                "namespace": "Alexa.ModeController",
+                "name": "mode",
+                "value": "Auto|Spot|Edge"
+              }
+            ]
+          }
+        }
+      },
+      "notes": [
+        "modeDelta: 1 表示切换到下一个模式",
+        "modeDelta: -1 表示切换到上一个模式",
+        "模式循环顺序: Auto → Spot → Edge → Auto"
+      ]
+    },
+    {
+      "name": "8. 状态报告 (ReportState)",
       "description": "测试查询设备当前状态",
+      "priority": "high",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -258,14 +495,14 @@
               "name": "ReportState",
               "payloadVersion": "3",
               "messageId": "test-reportstate-001",
-              "correlationToken": "test-correlation-005"
+              "correlationToken": "test-correlation-007"
             },
             "endpoint": {
               "scope": {
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {}
@@ -278,31 +515,43 @@
           "event": {
             "header": {
               "namespace": "Alexa",
-              "name": "StateReport"
+              "name": "StateReport",
+              "payloadVersion": "3"
             }
           },
           "context": {
             "properties": [
               {
                 "namespace": "Alexa.PowerController",
-                "name": "powerState"
+                "name": "powerState",
+                "value": "ON|OFF"
               },
               {
                 "namespace": "Alexa.ModeController",
-                "name": "mode"
+                "name": "mode",
+                "value": "Auto|Spot|Edge"
               },
               {
                 "namespace": "Alexa.EndpointHealth",
-                "name": "connectivity"
+                "name": "connectivity",
+                "value": {
+                  "value": "OK"
+                }
               }
             ]
           }
         }
-      }
+      },
+      "validation": [
+        "验证返回所有设备属性",
+        "检查 powerState、mode、connectivity 都存在",
+        "确认状态与数据库一致"
+      ]
     },
     {
-      "name": "7. 错误测试 - 设备不存在",
+      "name": "9. 错误测试 - 设备不存在",
       "description": "测试访问不存在的设备",
+      "priority": "low",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -316,7 +565,7 @@
               "name": "TurnOn",
               "payloadVersion": "3",
               "messageId": "test-error-001",
-              "correlationToken": "test-correlation-006"
+              "correlationToken": "test-correlation-008"
             },
             "endpoint": {
               "scope": {
@@ -339,15 +588,17 @@
               "name": "ErrorResponse"
             },
             "payload": {
-              "type": "NO_SUCH_ENDPOINT"
+              "type": "NO_SUCH_ENDPOINT",
+              "message": "设备不存在"
             }
           }
         }
       }
     },
     {
-      "name": "8. 错误测试 - 无效Token",
+      "name": "10. 错误测试 - 无效Token",
       "description": "测试使用无效的访问令牌",
+      "priority": "low",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -361,14 +612,14 @@
               "name": "TurnOn",
               "payloadVersion": "3",
               "messageId": "test-error-002",
-              "correlationToken": "test-correlation-007"
+              "correlationToken": "test-correlation-009"
             },
             "endpoint": {
               "scope": {
                 "type": "BearerToken",
-                "token": "INVALID_TOKEN"
+                "token": "INVALID_TOKEN_12345"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {}
@@ -384,15 +635,17 @@
               "name": "ErrorResponse"
             },
             "payload": {
-              "type": "INVALID_AUTHORIZATION_CREDENTIAL"
+              "type": "INVALID_AUTHORIZATION_CREDENTIAL",
+              "message": "访问令牌无效或已过期"
             }
           }
         }
       }
     },
     {
-      "name": "9. 错误测试 - 无效模式",
+      "name": "11. 错误测试 - 无效模式",
       "description": "测试设置不支持的清扫模式",
+      "priority": "low",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -406,14 +659,14 @@
               "name": "SetMode",
               "payloadVersion": "3",
               "messageId": "test-error-003",
-              "correlationToken": "test-correlation-008"
+              "correlationToken": "test-correlation-010"
             },
             "endpoint": {
               "scope": {
                 "type": "BearerToken",
                 "token": "YOUR_ACCESS_TOKEN_HERE"
               },
-              "endpointId": "robot_001",
+              "endpointId": "device-001",
               "cookie": {}
             },
             "payload": {
@@ -431,15 +684,17 @@
               "name": "ErrorResponse"
             },
             "payload": {
-              "type": "INVALID_VALUE"
+              "type": "INVALID_VALUE",
+              "message": "不支持的模式: InvalidMode。支持的模式: Auto, Spot, Edge"
             }
           }
         }
       }
     },
     {
-      "name": "10. 授权接受 (AcceptGrant)",
-      "description": "测试接受授权请求",
+      "name": "12. 错误测试 - 设备离线",
+      "description": "测试控制离线设备",
+      "priority": "low",
       "request": {
         "method": "POST",
         "url": "http://localhost:8080/alexa",
@@ -449,21 +704,21 @@
         "body": {
           "directive": {
             "header": {
-              "namespace": "Alexa.Authorization",
-              "name": "AcceptGrant",
+              "namespace": "Alexa.PowerController",
+              "name": "TurnOn",
               "payloadVersion": "3",
-              "messageId": "test-acceptgrant-001"
+              "messageId": "test-error-004",
+              "correlationToken": "test-correlation-011"
             },
-            "payload": {
-              "grant": {
-                "type": "OAuth2.AuthorizationCode",
-                "code": "test_authorization_code_123"
-              },
-              "grantee": {
+            "endpoint": {
+              "scope": {
                 "type": "BearerToken",
-                "token": "test_access_token_456"
-              }
-            }
+                "token": "YOUR_ACCESS_TOKEN_HERE"
+              },
+              "endpointId": "device-004",
+              "cookie": {}
+            },
+            "payload": {}
           }
         }
       },
@@ -472,34 +727,136 @@
         "body": {
           "event": {
             "header": {
-              "namespace": "Alexa.Authorization",
-              "name": "AcceptGrant.Response"
+              "namespace": "Alexa",
+              "name": "ErrorResponse"
+            },
+            "payload": {
+              "type": "ENDPOINT_UNREACHABLE",
+              "message": "设备离线或无法访问"
             }
           }
         }
-      }
+      },
+      "notes": [
+        "需要先在数据库中将 device-004 的 status 设置为 offline",
+        "SQL: UPDATE devices SET status = 'offline' WHERE device_id = 'device-004'"
+      ]
     }
   ],
-  "notes": {
-    "setup": [
-      "1. 确保应用已启动: mvn spring-boot:run",
-      "2. 确保数据库已导入测试数据",
-      "3. 获取有效的 access_token (通过 OAuth 流程)",
-      "4. 将所有请求中的 YOUR_ACCESS_TOKEN_HERE 替换为实际的 token"
+  "setup": {
+    "prerequisites": [
+      "1. 确保应用已启动: mvn spring-boot:run 或 ./start.sh",
+      "2. 确保数据库已导入测试数据: ./import-test-data.sh",
+      "3. 确保 Alexa 配置已设置（application.yml 或环境变量）",
+      "4. 获取有效的 OAuth access_token"
     ],
-    "testOrder": [
-      "建议按顺序执行测试:",
-      "1. 先测试设备发现",
-      "2. 再测试设备控制 (开机/关机/模式)",
-      "3. 测试状态查询",
-      "4. 最后测试错误场景"
+    "getAccessToken": {
+      "step1": "访问授权页面",
+      "url": "http://localhost:8080/oauth2/authorize?response_type=code&client_id=alexa-client&redirect_uri=https://example.com/callback&state=test",
+      "step2": "登录并授权（user1/password）",
+      "step3": "从重定向 URL 获取授权码",
+      "step4": "用授权码换取 access_token",
+      "tokenUrl": "POST http://localhost:8080/oauth2/token",
+      "tokenBody": "grant_type=authorization_code&code=YOUR_CODE&client_id=alexa-client&client_secret=alexa-secret&redirect_uri=https://example.com/callback"
+    },
+    "replaceToken": [
+      "将所有测试用例中的 YOUR_ACCESS_TOKEN_HERE 替换为实际的 access_token",
+      "可以使用 Postman 的环境变量功能: {{access_token}}"
     ],
-    "voiceCommands": [
-      "Alexa, discover devices",
+    "databaseCheck": [
+      "测试前检查数据库:",
+      "SELECT * FROM devices WHERE user_id = 1;",
+      "SELECT * FROM oauth_access_tokens WHERE client_id = 'alexa-client';",
+      "SELECT * FROM alexa_tokens WHERE user_id = 1;"
+    ]
+  },
+  "testOrder": {
+    "recommended": [
+      "0. AcceptGrant - 首次授权（可选，如果需要测试 ChangeReport）",
+      "1. Discovery - 设备发现",
+      "2. TurnOn - 开机",
+      "3. TurnOff - 关机",
+      "4-6. SetMode - 设置不同模式",
+      "7. AdjustMode - 调整模式",
+      "8. ReportState - 状态查询",
+      "9-12. 错误场景测试"
+    ],
+    "notes": [
+      "建议按顺序执行，确保每个测试的前置条件满足",
+      "错误测试可以单独执行，不影响其他测试"
+    ]
+  },
+  "voiceCommands": {
+    "discovery": "Alexa, discover devices",
+    "power": [
       "Alexa, turn on Living Room Vacuum",
       "Alexa, turn off the vacuum",
+      "Alexa, turn on the robot"
+    ],
+    "mode": [
       "Alexa, set Living Room Vacuum to spot mode",
-      "Alexa, what's the status of Living Room Vacuum?"
+      "Alexa, set the vacuum to auto mode",
+      "Alexa, change vacuum to edge cleaning"
+    ],
+    "state": [
+      "Alexa, what's the status of Living Room Vacuum?",
+      "Alexa, is the vacuum on?"
     ]
+  },
+  "troubleshooting": {
+    "tokenExpired": {
+      "error": "INVALID_AUTHORIZATION_CREDENTIAL",
+      "solution": "重新获取 access_token"
+    },
+    "deviceNotFound": {
+      "error": "NO_SUCH_ENDPOINT",
+      "solution": "检查 endpointId 是否正确，确认设备在数据库中存在"
+    },
+    "deviceOffline": {
+      "error": "ENDPOINT_UNREACHABLE",
+      "solution": "检查设备 status 字段，确保为 'online'"
+    },
+    "invalidMode": {
+      "error": "INVALID_VALUE",
+      "solution": "使用支持的模式: Auto, Spot, Edge（大小写不敏感）"
+    }
+  },
+  "validation": {
+    "checkDatabase": [
+      "-- 检查设备状态",
+      "SELECT device_id, device_name, power_state, work_mode, status FROM devices WHERE user_id = 1;",
+      "",
+      "-- 检查 Alexa Token",
+      "SELECT user_id, grantee_token, expires_at FROM alexa_tokens WHERE user_id = 1;",
+      "",
+      "-- 检查 OAuth Token",
+      "SELECT access_token, expires_at FROM oauth_access_tokens WHERE client_id = 'alexa-client';"
+    ],
+    "checkLogs": [
+      "查看应用日志确认请求处理:",
+      "=== 收到 Alexa 请求 ===",
+      "Namespace: Alexa.PowerController",
+      "Name: TurnOn",
+      "✓ 设备开机成功: endpointId=device-001"
+    ]
+  },
+  "notes": {
+    "version": "2.0.0",
+    "updated": "2026-02-25",
+    "changes": [
+      "新增 AcceptGrant 授权测试",
+      "新增 AdjustMode 模式调整测试",
+      "新增 Edge 模式测试",
+      "新增设备离线错误测试",
+      "更新所有响应示例，包含 EndpointHealth",
+      "添加详细的验证步骤和故障排查指南",
+      "添加数据库检查 SQL 语句",
+      "添加语音命令示例"
+    ],
+    "totalTests": 12,
+    "coverage": {
+      "功能测试": 8,
+      "错误测试": 4
+    }
   }
 }

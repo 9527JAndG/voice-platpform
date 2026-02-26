@@ -8,13 +8,22 @@
 
 ### 支持的接口
 
-| 接口 | 命名空间 | 操作 | 说明 |
-|------|---------|------|------|
-| 设备发现 | Alexa.Discovery | Discover | 返回用户的所有设备 |
-| 电源控制 | Alexa.PowerController | TurnOn, TurnOff | 开关设备 |
-| 模式控制 | Alexa.ModeController | SetMode, AdjustMode | 设置清扫模式 |
-| 状态报告 | Alexa | ReportState | 查询设备状态 |
-| 授权管理 | Alexa.Authorization | AcceptGrant | 接受授权 |
+| 接口 | 命名空间 | 操作 | 说明 | 状态 |
+|------|---------|------|------|------|
+| 授权管理 | Alexa.Authorization | AcceptGrant | 接受授权 | ✅ 已完成 |
+| 设备发现 | Alexa.Discovery | Discover | 返回用户的所有设备 | ✅ 已完成 |
+| 电源控制 | Alexa.PowerController | TurnOn, TurnOff | 开关设备 | ✅ 已完成 |
+| 模式控制 | Alexa.ModeController | SetMode, AdjustMode | 设置清扫模式 | ✅ 已完成 |
+| 状态报告 | Alexa | ReportState | 查询设备状态 | ✅ 已完成 |
+| 健康状态 | Alexa.EndpointHealth | - | 设备连接状态 | ✅ 已完成 |
+| 状态推送 | Alexa | ChangeReport | 主动推送状态变化 | ✅ 已完成（待集成） |
+
+### Token 管理功能（新增）
+
+- ✅ **Token 交换**：用授权码换取 Alexa Access Token
+- ✅ **Token 保存**：安全存储到数据库
+- ✅ **Token 刷新**：自动刷新过期的 Token（提前 5 分钟）
+- ✅ **Token 获取**：获取有效的 Access Token
 
 ### 支持的清扫模式
 
@@ -107,6 +116,56 @@ curl -X POST http://localhost:8080/alexa \
 ```
 
 ## 📝 接口详细说明
+
+### 0. AcceptGrant 授权接受（新增）
+
+**请求示例:**
+```json
+{
+  "directive": {
+    "header": {
+      "namespace": "Alexa.Authorization",
+      "name": "AcceptGrant",
+      "payloadVersion": "3",
+      "messageId": "unique-message-id"
+    },
+    "payload": {
+      "grant": {
+        "type": "OAuth2.AuthorizationCode",
+        "code": "authorization-code"
+      },
+      "grantee": {
+        "type": "BearerToken",
+        "token": "grantee-token"
+      }
+    }
+  }
+}
+```
+
+**响应示例:**
+```json
+{
+  "event": {
+    "header": {
+      "namespace": "Alexa.Authorization",
+      "name": "AcceptGrant.Response",
+      "payloadVersion": "3",
+      "messageId": "response-message-id"
+    },
+    "payload": {}
+  }
+}
+```
+
+**功能说明**：
+- 当用户在 Alexa App 中启用技能时调用
+- 用授权码换取 Alexa Access Token
+- 保存 Token 到数据库供后续使用
+- 为主动状态推送（ChangeReport）做准备
+
+**实现状态**：✅ 已完成  
+**代码位置**：`AlexaController.handleAcceptGrant()`
 
 ### 1. 设备发现 (Discovery)
 
@@ -492,6 +551,12 @@ WHERE client_id = 'alexa_client_id';
 
 ---
 
-**版本**: 1.0.0  
+**版本**: 2.0.0  
 **更新时间**: 2026-02-25  
-**状态**: ✅ 可用
+**状态**: ✅ 核心功能已完成（85%）  
+**实现进度**：
+- ✅ AcceptGrant 授权流程
+- ✅ Token 管理（交换、保存、刷新）
+- ✅ ChangeReport 状态推送
+- ✅ 所有控制接口
+- ⏳ AlexaStateReporter 集成（待完成）

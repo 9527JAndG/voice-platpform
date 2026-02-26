@@ -44,6 +44,32 @@ oauth2:
     # Token 类型：jwt 或 opaque
     token-type: jwt
 
+# Alexa 配置
+alexa:
+  # Alexa Skill Client ID（从 Alexa Developer Console 获取）
+  client-id: ${ALEXA_CLIENT_ID:amzn1.application-oa2-client.example}
+  # Alexa Skill Client Secret（从 Alexa Developer Console 获取）
+  client-secret: ${ALEXA_CLIENT_SECRET:your-client-secret-here}
+  # Alexa Event Gateway URL
+  event-gateway-url: https://api.amazonalexa.com/v3/events
+  # Alexa Token Exchange URL
+  token-exchange-url: https://api.amazon.com/auth/o2/token
+
+# Google Assistant 配置
+google:
+  # Google Project ID（从 Google Cloud Console 获取）
+  project-id: ${GOOGLE_PROJECT_ID:your-project-id}
+  # Service Account 配置
+  service-account:
+    # Service Account Email
+    client-email: ${GOOGLE_SERVICE_ACCOUNT_EMAIL:your-service-account@your-project.iam.gserviceaccount.com}
+    # Service Account Private Key（Base64 编码）
+    private-key: ${GOOGLE_SERVICE_ACCOUNT_KEY:your-private-key-here}
+  # HomeGraph API URL
+  homegraph:
+    request-sync-url: https://homegraph.googleapis.com/v1/devices:requestSync
+    report-state-url: https://homegraph.googleapis.com/v1/devices:reportStateAndNotification
+
 # 日志配置
 logging:
   level:
